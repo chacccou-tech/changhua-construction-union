@@ -27,7 +27,7 @@
     </div>
   </header>
 
-  <!-- 錨點（讓品牌連結能回到頁首） -->
+  <!-- 錨點（讓品牌能回到頁首） -->
   <div id="top"></div>
 
   <main>
@@ -59,16 +59,25 @@
     </section>
   </main>
 
-  <footer>
-    <!-- 將「關於本網站」搬到頁尾 -->
-    <section id="about" aria-labelledby="about-title">
+  <footer role="contentinfo">
+    <!-- 將「關於本網站」整理為三欄 -->
+    <section id="about" aria-labelledby="about-title" class="footer-info">
       <h2 id="about-title">關於本網站</h2>
-      <div class="contact card">
-        <p><strong>地址：</strong>彰化市曉陽路262-1號4樓</p>
-        <p><strong>連絡電話：</strong><a href="tel:047233698">04-723-3698</a></p>
-        <div class="hours">
-          <div class="hours-title"><strong>營業時間</strong></div>
-          <div class="hours-body">
+
+      <div class="footer-grid">
+        <!-- 聯絡資訊 -->
+        <div class="foot-col">
+          <h3>聯絡我們</h3>
+          <address>
+            <div><strong>地址：</strong>彰化市曉陽路262-1號4樓</div>
+            <div><strong>電話：</strong><a href="tel:047233698">04-723-3698</a></div>
+          </address>
+        </div>
+
+        <!-- 營業時間 -->
+        <div class="foot-col">
+          <h3>營業時間</h3>
+          <div class="hours">
             <ul class="hours-list">
               <li><span>星期一</span><span>08:30–17:00</span></li>
               <li><span>星期二</span><span>08:30–17:00</span></li>
@@ -80,14 +89,24 @@
             </ul>
           </div>
         </div>
+
+        <!-- 快速連結 -->
+        <div class="foot-col">
+          <h3>快速連結</h3>
+          <ul class="footer-links">
+            <li><a href="#news">最新消息</a></li>
+            <li><a href="#downloads">下載專區</a></li>
+            <li><a href="#top">回到頂部</a></li>
+          </ul>
+        </div>
       </div>
 
-      <p class="muted" style="margin-top: 12px;">此頁為範本，上線時可補上地圖與正式聯絡資訊。</p>
+      <p class="muted fineprint">此頁為範本，上線時可補上地圖與正式聯絡資訊。</p>
     </section>
 
     <div class="legal">
       © <span id="year"></span> 彰化縣營造職業工會．保留一切權利
-      <div style="margin-top:6px">建議部署：Cloudflare Pages / Netlify / Vercel 或自家 IIS / Nginx。全站 HTTPS 與 sitemap.xml 友善搜尋。</div>
+      <div class="muted" style="margin-top:6px">建議部署：Cloudflare Pages / Netlify / Vercel 或自家 IIS / Nginx。全站 HTTPS 與 sitemap.xml 友善搜尋。</div>
     </div>
   </footer>
 
