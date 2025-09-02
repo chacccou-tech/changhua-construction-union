@@ -1,0 +1,114 @@
+html { scroll-behavior: smooth; }
+
+:root {
+  /* 淺色主題（固定） */
+  --bg: #f7f9ff;
+  --bg-accent1: rgba(40, 80, 255, .06);
+  --bg-accent2: rgba(34, 197, 94, .06);
+  --card: #ffffff;
+  --muted: #4b586f;
+  --text: #0b1020;
+  --brand: #2f57ff;
+  --brand-2: #3b6cff;
+  --accent: #16a34a;
+  --danger: #dc2626;
+  --shadow: 0 10px 30px rgba(14, 30, 64, .10);
+  --radius: 18px;
+  --border: rgba(14, 30, 64, .08);
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  font-size: 18px;               /* 放大字體 */
+  background:
+    radial-gradient(1000px 500px at 15% -10%, var(--bg-accent1), transparent),
+    radial-gradient(800px 480px at 95% 0%, var(--bg-accent2), transparent),
+    var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+}
+
+/* Header */
+.navbar {
+  position: sticky; top: 0; z-index: 50;
+  backdrop-filter: blur(10px);
+  background: color-mix(in lab, var(--bg) 75%, #fff 25%);
+  border-bottom: 1px solid var(--border);
+}
+.nav-inner { max-width: 1100px; margin: 0 auto; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+.brand { display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--text); font-weight:700; font-size: 20px; }
+.brand-badge { width:40px; height:40px; border-radius: 50%; background: linear-gradient(135deg, var(--brand), var(--brand-2)); display:flex; align-items:center; justify-content:center; box-shadow: var(--shadow); }
+.brand-badge span { color:white; font-weight:800; }
+.nav-links { margin-left: auto; display:flex; gap: 12px; flex-wrap: wrap; }
+.nav-links a { color: var(--text); text-decoration: none; padding: 10px 14px; border-radius: 999px; border: 1px solid transparent; font-size: 18px; }
+.nav-links a:hover { background: rgba(0,0,0,.04); }
+.nav-links a.active { border-color: var(--brand-2); background: rgba(59,108,255,.08); }
+
+/* Sections */
+main { scroll-margin-top: 86px; }
+section { max-width:1100px; margin: 0 auto; padding: 30px 20px; }
+section h2 { margin: 0 0 16px; font-size: clamp(24px, 4.5vw, 32px); }
+
+/* Tools bar */
+.tools { display:flex; align-items:center; gap: 12px; flex-wrap: wrap; margin: 14px 0 20px; }
+.search { position:relative; flex: 1 1 360px; }
+.search input { width:100%; padding: 14px 16px 14px 44px; border-radius: 12px; border: 1px solid var(--border); background: #fff; color: var(--text); font-size: 18px; }
+.search .icon { position:absolute; top:50%; left:14px; transform: translateY(-50%); opacity: .55; }
+.chips { display:flex; gap:10px; flex-wrap: wrap; }
+.chip { padding: 10px 14px; border-radius: 999px; border: 1px solid var(--border); background: #fff; color: var(--text); cursor:pointer; user-select:none; font-size: 16px; }
+.chip.active { background: linear-gradient(135deg, var(--brand), var(--brand-2)); color:#fff; border-color: transparent; }
+
+/* Cards grid */
+.grid { display:grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
+.card { grid-column: span 12; background: var(--card); border:1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
+.card:hover { transform: translateY(-2px); }
+.card-head { display:flex; gap: 12px; align-items: baseline; }
+.badge { display:inline-flex; align-items:center; gap:6px; padding: 4px 9px; border-radius: 999px; background: rgba(59,108,255,.1); border:1px solid rgba(59,108,255,.25); color: var(--brand-2); font-size: 14px; }
+.badge.new { background: rgba(34,197,94,.15); border-color: rgba(34,197,94,.35); color: var(--accent); }
+.title { font-weight: 700; font-size: 20px; margin-right: auto; }
+.meta { color: var(--muted); font-size: 16px; }
+.body { color: color-mix(in lab, var(--text) 90%, transparent); margin: 12px 0 10px; font-size: 18px; }
+.attachments { display:flex; gap: 12px; flex-wrap: wrap; }
+.a-btn { display:inline-flex; align-items:center; gap:8px; padding: 10px 14px; border-radius: 10px; border: 1px dashed var(--border); text-decoration:none; color: var(--text); background:#fff; font-size: 16px; }
+.a-btn:hover { background: rgba(0,0,0,.04); }
+
+/* Downloads list */
+.list { display:grid; grid-template-columns: repeat(12, 1fr); gap: 12px; }
+.row { grid-column: span 12; display:grid; grid-template-columns: 1.5fr 5fr 2fr 1.5fr; gap: 14px; align-items: center; padding: 16px 18px; border-radius: 14px; background: var(--card); border:1px solid var(--border); box-shadow: var(--shadow); }
+.row strong { font-weight: 700; font-size: 20px; }
+.row a { color: var(--text); text-decoration: none; border-bottom: 1px dashed rgba(59,108,255,.35); font-size: 18px; }
+.row a:hover { color: var(--brand-2); }
+.muted { color: var(--muted); }
+
+/* Footer（包含「關於本網站」） */
+footer { max-width:1100px; margin: 0 auto; padding: 42px 20px 80px; color: var(--muted); }
+footer h2 { color: var(--text); } /* 確保頁尾標題對比足夠 */
+
+.contact { margin-top: 12px; font-size: 18px; }
+.hours { margin-top: 12px; background: var(--card); border:1px solid var(--border); border-radius: 14px; padding: 14px 16px; box-shadow: var(--shadow); }
+.hours-title { margin-bottom: 10px; }
+.hours-list { list-style: none; padding: 0; margin: 0; display:grid; grid-template-columns: 1fr 1fr; gap: 10px 18px; }
+.hours-list li { display:flex; justify-content: space-between; border-bottom: 1px dashed var(--border); padding: 8px 0; font-size: 18px; }
+.hours-list li:last-child { border-bottom: 0; }
+
+/* Back to top button */
+.back-to-top {
+  position: fixed; right: 18px; bottom: 18px; z-index: 60;
+  padding: 12px 14px; border-radius: 999px; border:1px solid var(--border); background: #fff; color: var(--text);
+  box-shadow: var(--shadow); display:none; font-size: 18px;
+}
+.back-to-top.show { display: inline-flex; }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .row { grid-template-columns: 1fr; align-items: start; }
+}
+@media (max-width: 640px) {
+  .hours-list { grid-template-columns: 1fr; }
+}
+
+/* 輔助：隱藏僅供螢幕報讀器用的文字 */
+.visually-hidden { position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); border:0; }
