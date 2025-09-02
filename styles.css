@@ -27,20 +27,36 @@ body{
     var(--bg);
 }
 
-/* ===== Header ===== */
+/* ===== Header（含手機版漢堡選單） ===== */
 .navbar{
   position:sticky; top:0; z-index:50;
   backdrop-filter: blur(10px);
   background: color-mix(in lab, var(--bg) 75%, #fff 25%);
   border-bottom:1px solid var(--border);
 }
-.nav-inner{ max-width:1100px; margin:0 auto; padding:16px 20px; display:flex; align-items:center; gap:16px; }
+.nav-inner{ max-width:1100px; margin:0 auto; padding:12px 20px; display:flex; align-items:center; gap:12px; }
 .brand{ display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--text); font-weight:700; font-size:20px; }
 .brand-badge{ width:40px; height:40px; border-radius:50%; display:grid; place-items:center; color:#fff; background: linear-gradient(135deg, var(--brand), var(--brand-2)); box-shadow:var(--shadow); font-weight:800; }
 .nav-links{ margin-left:auto; display:flex; gap:12px; flex-wrap:wrap; }
 .nav-links a{ color:var(--text); text-decoration:none; padding:10px 14px; border-radius:999px; border:1px solid transparent; font-size:18px; }
 .nav-links a:hover{ background: rgba(0,0,0,.04); }
 .nav-links a.active{ border-color: var(--brand-2); background: rgba(59,108,255,.08); }
+
+/* 手機選單按鈕 */
+.menu-btn{ display:none; margin-left:auto; width:40px; height:40px; border-radius:10px; border:1px solid var(--border); background:#fff; box-shadow:var(--shadow); cursor:pointer; }
+.menu-btn .bar{ display:block; width:22px; height:2px; background: #1f2a44; margin:6px auto; border-radius:2px; }
+
+/* 手機版導覽（overlay dropdown） */
+@media (max-width: 720px){
+  .menu-btn{ display:block; }
+  .nav-links{
+    position: fixed; top: 64px; left: 12px; right: 12px;
+    display:none; flex-direction: column; gap:8px;
+    background:#fff; border:1px solid var(--border); border-radius:14px; box-shadow: var(--shadow);
+    padding:10px;
+  }
+  .nav-links.open{ display:flex; }
+}
 
 /* ===== Section 共用 ===== */
 .section-head{ max-width:1100px; margin:0 auto; padding:20px 20px 0; }
@@ -83,7 +99,6 @@ footer{ max-width:1100px; margin:0 auto; padding: 30px 20px 80px; color:var(--mu
 footer h2{ color:var(--text); margin: 0 0 10px; }
 .footer-grid{ display:grid; grid-template-columns: 1.3fr 1fr; gap:20px; align-items:start; }
 
-/* 合一卡片 */
 .contact-hours{ padding: 16px; }
 .ch-row{ display:flex; gap:12px; align-items:center; padding-bottom:10px; border-bottom:1px dashed var(--border); margin-bottom:12px; }
 .ch-icon{ width:36px; height:36px; border-radius:10px; background: rgba(59,108,255,.1); color:var(--brand-2); display:grid; place-items:center; flex:0 0 36px; }
@@ -94,10 +109,40 @@ footer h2{ color:var(--text); margin: 0 0 10px; }
 .ch-hours{ margin-top:6px; }
 .ch-hours-title{ display:flex; align-items:center; gap:8px; font-weight:700; color:var(--text); margin-bottom:8px; }
 .ch-hours-title svg{ width:18px; height:18px; stroke: currentColor; fill:none; stroke-width:2; }
-.hours-list{ list-style:none; padding:0; margin:0; display:grid; grid-template-columns: 1fr 1fr; gap:8px 14px; }
-.hours-list li{ display:flex; justify-content:space-between; border-bottom:1px dashed var(--border); padding:6px 0; font-size:18px; }
+
+/* === 營業時間：自然順序 + 桌機重排 === */
+.hours-list{
+  list-style:none; padding:0; margin:0;
+  display:grid; grid-template-columns: 1fr 1fr;
+  /* 指定桌機的擺位：一/五、二/六、三/日、四 */
+  grid-template-areas:
+    "mon fri"
+    "tue sat"
+    "wed sun"
+    "thu .";
+  gap:10px 24px;
+}
+.hours-list li{ display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px dashed var(--border); font-size:18px; }
 .hours-list li:last-child{ border-bottom:0; }
 .hours-list .closed{ color: var(--danger); font-weight:700; }
+
+/* 對應 grid-area（HTML 順序不變） */
+.hours-list .d1{ grid-area: mon; }
+.hours-list .d2{ grid-area: tue; }
+.hours-list .d3{ grid-area: wed; }
+.hours-list .d4{ grid-area: thu; }
+.hours-list .d5{ grid-area: fri; }
+.hours-list .d6{ grid-area: sat; }
+.hours-list .d7{ grid-area: sun; }
+
+/* 手機：單欄且順序為一→日（靠 grid-template-areas 指定） */
+@media (max-width: 900px){
+  .hours-list{
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "mon" "tue" "wed" "thu" "fri" "sat" "sun";
+  }
+}
 
 /* 地圖卡 */
 .map-card{ padding:16px; }
@@ -118,17 +163,14 @@ footer h2{ color:var(--text); margin: 0 0 10px; }
 }
 .back-to-top.show{ display:inline-flex; }
 
-/* ===== RWD ===== */
+/* RWD：下載卡片改單欄、頁尾堆疊、手機導覽尺寸 */
 @media (max-width: 1000px){
   .dl-card{ grid-column: span 12; }
 }
 @media (max-width: 900px){
   .footer-grid{ grid-template-columns: 1fr; }
-  .hours-list{ grid-template-columns: 1fr; }
 }
-@media (max-width: 640px){
+@media (max-width: 720px){
   .nav-links a{ font-size:16px; }
 }
-
-/* 無障礙輔助 */
 .visually-hidden{ position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); border:0; }

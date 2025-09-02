@@ -31,7 +31,7 @@ const $$ = (sel, el = document) => Array.from(el.querySelectorAll(sel));
 const fmtDate = (d) => new Intl.DateTimeFormat('zh-TW', { year:'numeric', month:'2-digit', day:'2-digit' }).format(new Date(d));
 const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
 
-// ======== 最新消息（列表）渲染：支援分類按鈕 + 搜尋 ========
+// ======== 最新消息（列表）渲染：分類按鈕 + 搜尋 ========
 (function renderNews(){
   const list = $('#newsList');
   const chipsWrap = $('#newsChips');
@@ -45,7 +45,7 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
   function buildChips(){
     chipsWrap.innerHTML = '';
     const tags = ['全部', ...allTags];
-    for(const t of tags){
+    for (const t of tags){
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'chip' + (t === activeTag ? ' active' : '');
@@ -81,20 +81,17 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
           <div class="n-date" aria-label="發布日期">${fmtDate(it.date)}</div>
         </div>
         <div class="n-body">${it.body}</div>
-        ${
-          Array.isArray(it.attachments) && it.attachments.length
-          ? `<div class="attachments">
-              ${it.attachments.map(a =>
-                `<a class="a-btn" href="${a.href}" target="_blank" rel="noopener" download>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-                  </svg>
-                  ${a.label}${a.size ? `（${a.size}）` : ''}
-                </a>`
-              ).join('')}
-            </div>`
-          : ''
-        }
+        ${Array.isArray(it.attachments) && it.attachments.length ? `
+          <div class="attachments">
+            ${it.attachments.map(a => `
+              <a class="a-btn" href="${a.href}" target="_blank" rel="noopener" download>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                ${a.label}${a.size ? `（${a.size}）` : ''}
+              </a>
+            `).join('')}
+          </div>` : ''}
       `;
       list.appendChild(card);
     }
@@ -149,11 +146,12 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
   render();
 })();
 
-// ======== 一頁式導覽高亮 & 返回頂部 ========
-(function onePage(){
+// ======== 一頁式導覽高亮 & 手機選單 ========
+(function navEnhance(){
   const links = $$('.nav-links a[href^="#"]');
   const sections = links.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
 
+  // 高亮導覽
   const io = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       const id = '#' + entry.target.id;
@@ -167,6 +165,19 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
   }, { rootMargin: "-40% 0px -55% 0px", threshold: 0.01 });
   sections.forEach(s => io.observe(s));
 
+  // 手機漢堡選單
+  const toggle = $('#menuToggle');
+  const nav = $('#primaryNav');
+  const closeMenu = () => { nav.classList.remove('open'); toggle.setAttribute('aria-expanded','false'); };
+  toggle.addEventListener('click', () => {
+    const open = nav.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', String(open));
+  });
+  nav.addEventListener('click', (e) => {
+    if(e.target.matches('a[href^="#"]')) closeMenu();
+  });
+
+  // 返回頂部
   const btn = document.querySelector('.back-to-top');
   window.addEventListener('scroll', () => {
     btn.classList.toggle('show', window.scrollY > 480);

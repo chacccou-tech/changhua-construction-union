@@ -13,14 +13,19 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- 頁首 -->
+  <!-- 頁首（手機含漢堡選單） -->
   <header class="navbar" role="banner">
     <div class="nav-inner">
       <a class="brand" href="#top" aria-label="回到首頁">
         <span class="brand-badge" aria-hidden="true">工</span>
         <span>彰化縣營造職業工會</span>
       </a>
-      <nav class="nav-links" aria-label="主要導覽">
+
+      <button class="menu-btn" id="menuToggle" aria-label="開啟主選單" aria-controls="primaryNav" aria-expanded="false">
+        <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+      </button>
+
+      <nav class="nav-links" id="primaryNav" aria-label="主要導覽">
         <a href="#news">最新消息</a>
         <a href="#downloads">下載專區</a>
         <a href="#about">關於</a>
@@ -69,7 +74,7 @@
     <section id="about" class="footer-info" aria-labelledby="about-title">
       <h2 id="about-title">關於本網站</h2>
       <div class="footer-grid">
-        <!-- 左側：聯絡＋營業時間（合一卡片） -->
+        <!-- 左：聯絡＋營業時間（HTML 保持一→日自然順序） -->
         <div class="card contact-hours">
           <div class="ch-row">
             <div class="ch-icon" aria-hidden="true">
@@ -96,20 +101,21 @@
               <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
               營業時間
             </div>
+
+            <!-- 保持自然順序；用 CSS Grid 指定桌機的排列 -->
             <ul class="hours-list">
-              <li><span>星期一</span><span>08:30–17:00</span></li>
-              <li><span>星期五</span><span>08:30–17:00</span></li>
-              <li><span>星期二</span><span>08:30–17:00</span></li>
-              <li><span>星期六</span><span class="closed">休息</span></li>
-              <li><span>星期三</span><span>08:30–17:00</span></li>
-              <li><span>星期日</span><span class="closed">休息</span></li>
-              <li><span>星期四</span><span>08:30–17:00</span></li>
-              <!-- <li><span>星期四</span><span class="closed">休息</span></li> -->
+              <li class="d1"><span>星期一</span><span>08:30–17:00</span></li>
+              <li class="d2"><span>星期二</span><span>08:30–17:00</span></li>
+              <li class="d3"><span>星期三</span><span>08:30–17:00</span></li>
+              <li class="d4"><span>星期四</span><span>08:30–17:00</span></li>
+              <li class="d5"><span>星期五</span><span>08:30–17:00</span></li>
+              <li class="d6"><span>星期六</span><span class="closed">休息</span></li>
+              <li class="d7"><span>星期日</span><span class="closed">休息</span></li>
             </ul>
           </div>
         </div>
 
-        <!-- 右側：Google 地圖 -->
+        <!-- 右：Google 地圖 -->
         <div class="card map-card">
           <div class="map-wrap">
             <iframe
@@ -128,7 +134,8 @@
     </section>
 
     <div class="legal">
-      © <span id="year"></span> 彰化縣營造職業工會      
+      © <span id="year"></span> 彰化縣營造職業工會．保留一切權利
+      <div class="muted" style="margin-top:6px">建議部署：Cloudflare Pages / Netlify / Vercel 或自家 IIS / Nginx。全站 HTTPS 與 sitemap.xml 友善搜尋。</div>
     </div>
   </footer>
 
