@@ -1,11 +1,21 @@
 // ======== 可編輯資料：最新消息 ========
 const NEWS = [
-  { id: "n-2025-08-maintain", title: "系統維護公告（9/5 00:30-02:30）", date: "2025-08-29",
-    body: "為提升服務品質，預計 9/5(五) 凌晨進行例行維護，期間部分服務暫停。造成不便，敬請見諒。",
-    tags: ["公告","維護"], attachments: [{ label: "維護說明 PDF", href: "/downloads/維護說明_20250905.pdf", size: "0.7 MB" }] },
-  { id: "n-2025-07-product", title: "新服務上線：線上申請表單（試營運）", date: "2025-07-18",
-    body: "推出線上申請表單試營運，提供更便捷的申請流程，歡迎多加利用。",
-    tags: ["業務","服務更新"], attachments: [{ label: "申請流程說明", href: "/downloads/申請流程_說明.pdf", size: "1.1 MB" }] }
+  {
+    id: "n-2025-08-maintain",
+    title: "系統維護公告（9/5 00:30–02:30）",
+    date: "2025-08-29",
+    body: "為提升服務品質，9/5(五) 凌晨將進行例行維護，期間部分服務暫停，敬請見諒。",
+    tags: ["公告", "維護"],
+    attachments: [{ label: "維護說明 PDF", href: "/downloads/維護說明_20250905.pdf", size: "0.7 MB" }]
+  },
+  {
+    id: "n-2025-07-product",
+    title: "新服務上線：線上申請表單（試營運）",
+    date: "2025-07-18",
+    body: "開放線上申請表單試營運，流程更便捷，歡迎多加利用。",
+    tags: ["業務", "服務更新"],
+    attachments: [{ label: "申請流程說明", href: "/downloads/申請流程_說明.pdf", size: "1.1 MB" }]
+  }
 ];
 
 // ======== 可編輯資料：下載清單（PDF） ========
@@ -15,17 +25,17 @@ const DOWNLOADS = [
   { title: "自然人憑證網銀操作手冊", href: "/downloads/自然人憑證_網銀操作手冊.pdf", size: "2.0 MB", updated: "2025-06-10" }
 ];
 
-// ======== 輔助函式 ========
+// ======== 工具函式 ========
 const $ = (sel, el = document) => el.querySelector(sel);
 const $$ = (sel, el = document) => Array.from(el.querySelectorAll(sel));
-const fmtDate = (d) => new Intl.DateTimeFormat('zh-TW', { year:'numeric', month:'2-digit', day:'2-digit'}).format(new Date(d));
+const fmtDate = (d) => new Intl.DateTimeFormat('zh-TW', { year:'numeric', month:'2-digit', day:'2-digit' }).format(new Date(d));
 const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
 
-// ======== 最新消息渲染 ========
+// ======== 最新消息（列表）渲染：支援分類按鈕 + 搜尋 ========
 (function renderNews(){
-  const grid = document.getElementById('newsGrid');
-  const chipsWrap = document.getElementById('newsChips');
-  const inp = document.getElementById('newsSearch');
+  const list = $('#newsList');
+  const chipsWrap = $('#newsChips');
+  const searchInput = $('#newsSearch');
 
   const sorted = [...NEWS].sort((a,b) => new Date(b.date) - new Date(a.date));
   const allTags = Array.from(new Set(sorted.flatMap(x => x.tags || [])));
@@ -35,103 +45,121 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
   function buildChips(){
     chipsWrap.innerHTML = '';
     const tags = ['全部', ...allTags];
-    for (const t of tags) {
-      const el = document.createElement('button');
-      el.type = 'button';
-      el.className = 'chip' + (t === activeTag ? ' active' : '');
-      el.textContent = t;
-      el.dataset.tag = t;
-      chipsWrap.appendChild(el);
+    for(const t of tags){
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'chip' + (t === activeTag ? ' active' : '');
+      btn.textContent = t;
+      btn.dataset.tag = t;
+      chipsWrap.appendChild(btn);
     }
   }
 
   function render(){
-    grid.innerHTML = '';
-    const list = sorted.filter(item => {
+    list.innerHTML = '';
+    const items = sorted.filter(item => {
       const matchTag = activeTag === '全部' || (item.tags || []).includes(activeTag);
-      const text = `${item.title} ${item.body} ${(item.tags||[]).join(' ')}`.toLowerCase();
+      const text = `${item.title} ${item.body} ${(item.tags||[]).join(' ')} ${item.date}`.toLowerCase();
       const matchKey = !keyword || text.includes(keyword.toLowerCase());
       return matchTag && matchKey;
     });
-    if (!list.length) {
-      grid.innerHTML = `<div class="card" role="status">查無符合的消息。</div>`;
+
+    if(!items.length){
+      list.innerHTML = `<div class="card">查無符合的消息。</div>`;
       return;
     }
-    for (const it of list) {
+
+    for(const it of items){
       const isNew = daysBetween(new Date(it.date), new Date()) <= 14;
       const card = document.createElement('article');
       card.className = 'card';
       card.innerHTML = `
-        <div class="card-head">
+        <div class="n-head">
           ${it.tags?.[0] ? `<span class="badge">${it.tags[0]}</span>` : ''}
           ${isNew ? `<span class="badge new">NEW</span>` : ''}
-          <div class="title">${it.title}</div>
-          <div class="meta" aria-label="發布日期">${fmtDate(it.date)}</div>
+          <div class="n-title">${it.title}</div>
+          <div class="n-date" aria-label="發布日期">${fmtDate(it.date)}</div>
         </div>
-        <div class="body">${it.body}</div>
-        ${Array.isArray(it.attachments) && it.attachments.length ? `<div class="attachments">${it.attachments.map(a => `<a class="a-btn" href="${a.href}" target="_blank" rel="noopener" download><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> ${a.label}${a.size ? `（${a.size}）` : ''}</a>`).join('')}</div>` : ''}
+        <div class="n-body">${it.body}</div>
+        ${
+          Array.isArray(it.attachments) && it.attachments.length
+          ? `<div class="attachments">
+              ${it.attachments.map(a =>
+                `<a class="a-btn" href="${a.href}" target="_blank" rel="noopener" download>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
+                  ${a.label}${a.size ? `（${a.size}）` : ''}
+                </a>`
+              ).join('')}
+            </div>`
+          : ''
+        }
+      `;
+      list.appendChild(card);
+    }
+  }
+
+  chipsWrap.addEventListener('click', (e) => {
+    const t = e.target.closest('.chip'); if(!t) return;
+    activeTag = t.dataset.tag; buildChips(); render();
+  });
+  searchInput.addEventListener('input', () => { keyword = searchInput.value.trim(); render(); });
+
+  buildChips(); render();
+})();
+
+// ======== 下載專區渲染 ========
+(function renderDownloads(){
+  const grid = $('#dlGrid');
+  const searchInput = $('#dlSearch');
+  const data = [...DOWNLOADS].sort((a,b)=> new Date(b.updated) - new Date(a.updated));
+  let keyword = '';
+
+  function render(){
+    grid.innerHTML = '';
+    const rows = data.filter(x => {
+      const text = `${x.title} ${x.href}`.toLowerCase();
+      return !keyword || text.includes(keyword.toLowerCase());
+    });
+
+    if(!rows.length){
+      grid.innerHTML = `<div class="card">查無符合的檔案。</div>`;
+      return;
+    }
+
+    for(const it of rows){
+      const card = document.createElement('div');
+      card.className = 'dl-card';
+      card.innerHTML = `
+        <div class="file-ico" aria-hidden="true">PDF</div>
+        <div>
+          <div class="dl-title">${it.title}</div>
+          <div class="dl-meta">更新：${fmtDate(it.updated)}｜大小：${it.size || '—'}</div>
+        </div>
+        <div class="dl-action">
+          <a href="${it.href}" target="_blank" rel="noopener" download aria-label="下載 ${it.title}">下載</a>
+        </div>
       `;
       grid.appendChild(card);
     }
   }
 
-  chipsWrap.addEventListener('click', (e) => {
-    const t = e.target.closest('.chip');
-    if (!t) return;
-    activeTag = t.dataset.tag; buildChips(); render();
-  });
-  inp.addEventListener('input', () => { keyword = inp.value.trim(); render(); });
-
-  buildChips();
+  searchInput.addEventListener('input', () => { keyword = searchInput.value.trim(); render(); });
   render();
 })();
 
-// ======== 下載清單渲染 ========
-(function renderDownloads(){
-  const list = document.getElementById('dlList');
-  const inp = document.getElementById('dlSearch');
-  const data = [...DOWNLOADS].sort((a,b)=> new Date(b.updated) - new Date(a.updated));
-  let keyword = '';
-
-  function render(){
-    list.innerHTML = '';
-    const rows = data.filter(x => {
-      const text = `${x.title} ${x.href}`.toLowerCase();
-      return !keyword || text.includes(keyword.toLowerCase());
-    });
-    if (!rows.length) {
-      list.innerHTML = `<div class="card" role="status">查無符合的檔案。</div>`;
-      return;
-    }
-    for (const it of rows) {
-      const row = document.createElement('div');
-      row.className = 'row';
-      row.innerHTML = `
-        <div class="muted">${fmtDate(it.updated)}</div>
-        <div><strong>${it.title}</strong></div>
-        <div>${it.size || ''}</div>
-        <div><a href="${it.href}" target="_blank" rel="noopener" download>下載 PDF</a></div>
-      `;
-      list.appendChild(row);
-    }
-  }
-
-  inp.addEventListener('input', () => { keyword = inp.value.trim(); render(); });
-  render();
-})();
-
-// ======== 一頁式：導覽錨點高亮 & 返回頂部 ========
-(function onePageEnhance(){
+// ======== 一頁式導覽高亮 & 返回頂部 ========
+(function onePage(){
   const links = $$('.nav-links a[href^="#"]');
   const sections = links.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
 
-  // 高亮目前區塊對應的導覽連結
   const io = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       const id = '#' + entry.target.id;
       const link = links.find(a => a.getAttribute('href') === id);
-      if (!link) return;
-      if (entry.isIntersecting) {
+      if(!link) return;
+      if(entry.isIntersecting){
         links.forEach(a => a.classList.remove('active'));
         link.classList.add('active');
       }
@@ -139,12 +167,7 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
   }, { rootMargin: "-40% 0px -55% 0px", threshold: 0.01 });
   sections.forEach(s => io.observe(s));
 
-  // 返回頂部按鈕
-  const btn = document.createElement('button');
-  btn.className = 'back-to-top';
-  btn.setAttribute('aria-label','返回頂部');
-  btn.innerText = '↑';
-  document.body.appendChild(btn);
+  const btn = document.querySelector('.back-to-top');
   window.addEventListener('scroll', () => {
     btn.classList.toggle('show', window.scrollY > 480);
   });
