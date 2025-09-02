@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://chacccou-tech.github.io/changhua-construction-union/sitemap.xml
