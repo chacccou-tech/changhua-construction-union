@@ -22,7 +22,7 @@ html, body { height: 100%; }
 body {
   margin: 0;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
-  font-size: 18px;               /* 放大字體 */
+  font-size: 18px;                /* 放大字體 */
   background:
     radial-gradient(1000px 500px at 15% -10%, var(--bg-accent1), transparent),
     radial-gradient(800px 480px at 95% 0%, var(--bg-accent2), transparent),
@@ -83,16 +83,37 @@ section h2 { margin: 0 0 16px; font-size: clamp(24px, 4.5vw, 32px); }
 .row a:hover { color: var(--brand-2); }
 .muted { color: var(--muted); }
 
-/* Footer（包含「關於本網站」） */
+/* ---------- Footer（整齊三欄） ---------- */
 footer { max-width:1100px; margin: 0 auto; padding: 42px 20px 80px; color: var(--muted); }
-footer h2 { color: var(--text); } /* 確保頁尾標題對比足夠 */
+footer h2 { color: var(--text); margin-bottom: 12px; }
+.footer-info { margin-bottom: 16px; }
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1fr;  /* 聯絡 / 時間 / 連結 */
+  gap: 20px;
+  align-items: start;
+}
+.foot-col h3 { margin: 0 0 10px; font-size: 18px; color: var(--text); }
+address { font-style: normal; line-height: 1.8; }
 
-.contact { margin-top: 12px; font-size: 18px; }
-.hours { margin-top: 12px; background: var(--card); border:1px solid var(--border); border-radius: 14px; padding: 14px 16px; box-shadow: var(--shadow); }
-.hours-title { margin-bottom: 10px; }
-.hours-list { list-style: none; padding: 0; margin: 0; display:grid; grid-template-columns: 1fr 1fr; gap: 10px 18px; }
-.hours-list li { display:flex; justify-content: space-between; border-bottom: 1px dashed var(--border); padding: 8px 0; font-size: 18px; }
+.footer-links { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.footer-links a { color: var(--text); text-decoration: none; border-bottom: 1px dashed transparent; }
+.footer-links a:hover { border-bottom-color: rgba(59,108,255,.35); color: var(--brand-2); }
+
+.hours { margin: 0; background: var(--card); border:1px solid var(--border); border-radius: 12px; padding: 12px 14px; box-shadow: var(--shadow); }
+.hours-list { list-style: none; padding: 0; margin: 0; display:grid; grid-template-columns: 1fr; gap: 8px; }
+.hours-list li { display:flex; justify-content: space-between; border-bottom: 1px dashed var(--border); padding: 6px 0; font-size: 18px; }
 .hours-list li:last-child { border-bottom: 0; }
+
+.fineprint { margin-top: 10px; }
+
+.legal {
+  margin-top: 22px;
+  border-top: 1px dashed var(--border);
+  padding-top: 14px;
+  text-align: center;
+  font-size: 16px;
+}
 
 /* Back to top button */
 .back-to-top {
@@ -105,9 +126,10 @@ footer h2 { color: var(--text); } /* 確保頁尾標題對比足夠 */
 /* Responsive */
 @media (max-width: 900px) {
   .row { grid-template-columns: 1fr; align-items: start; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 640px) {
-  .hours-list { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; }
 }
 
 /* 輔助：隱藏僅供螢幕報讀器用的文字 */
