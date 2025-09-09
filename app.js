@@ -20,9 +20,9 @@ const NEWS = [
 
 // ======== 可編輯資料：下載清單（PDF） ========
 const DOWNLOADS = [
-  { title: "存款利率說明（2025 Q3）", href: "/downloads/存款利率說明_2025Q3.pdf", size: "1.2 MB", updated: "2025-08-15" },
-  { title: "貸款申請書範本", href: "/downloads/貸款申請書_範本.pdf", size: "0.8 MB", updated: "2025-07-03" },
-  { title: "自然人憑證網銀操作手冊", href: "/downloads/自然人憑證_網銀操作手冊.pdf", size: "2.0 MB", updated: "2025-06-10" }
+  { title: "測試中 說明", href: "/downloads/說明_2025.pdf", size: "1.2 MB", updated: "2025-08-15" },
+  { title: "測試中 申請書範本", href: "/downloads/申請書_範本.pdf", size: "0.8 MB", updated: "2025-07-03" },
+  { title: "測試中 銀操作手冊", href: "/downloads/操作手冊.pdf", size: "2.0 MB", updated: "2025-06-10" }
 ];
 
 // ======== 工具函式 ========
