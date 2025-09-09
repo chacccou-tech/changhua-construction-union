@@ -187,3 +187,74 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
 
 // 年份
 document.getElementById('year').textContent = new Date().getFullYear();
+
+/* === 新增：重要公告 Modal === */
+(function announcementModal(){
+  // 截止時間：選舉（2025-09-12 15:00 +08）與福利品（到 2025-11-20 23:59:59 +08）
+  const DEADLINE_TS = new Date('2025-11-20T23:59:59+08:00').getTime();
+  const KEY = 'union-ann-hide-until-v1';
+
+  const backdrop = document.getElementById('annBackdrop');
+  const modal = document.getElementById('annModal');
+  if(!backdrop || !modal) return; // 安全保護：沒有 modal 就不執行
+
+  const closeBtn = document.getElementById('annClose');
+  const confirmBtn = document.getElementById('annConfirm');
+  const laterBtn = document.getElementById('annLater');
+  const dontShow = document.getElementById('annDontShow');
+
+  const open = () => {
+    document.body.classList.add('modal-open');
+    backdrop.hidden = false; modal.hidden = false;
+    // 聚焦到關閉按鈕，利於鍵盤操作
+    (closeBtn || confirmBtn || modal).focus({ preventScroll: true });
+    trapFocus(true);
+  };
+  const close = () => {
+    trapFocus(false);
+    backdrop.hidden = true; modal.hidden = true;
+    document.body.classList.remove('modal-open');
+  };
+
+  // Tab 鍵焦點圈定在對話框
+  let focusHandler;
+  function trapFocus(enable){
+    if(!enable){
+      document.removeEventListener('keydown', focusHandler);
+      return;
+    }
+    const selectors = 'a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])';
+    const getFocusables = () => Array.from(modal.querySelectorAll(selectors)).filter(el => !el.hasAttribute('disabled'));
+    focusHandler = (e) => {
+      if(e.key === 'Escape') { e.preventDefault(); close(); return; }
+      if(e.key !== 'Tab') return;
+      const f = getFocusables();
+      if(!f.length) return;
+      const first = f[0], last = f[f.length - 1];
+      if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+      else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+    };
+    document.addEventListener('keydown', focusHandler);
+  }
+
+  // 初始顯示判斷
+  const now = Date.now();
+  const hideUntil = parseInt(localStorage.getItem(KEY) || '0', 10);
+  if (now <= DEADLINE_TS && now >= 0 && now >= 0 && now >= 0 && now >= 0) { // 小心保底
+    if (!(hideUntil && now < hideUntil)) {
+      // 延遲一點點再顯示，避免跟首屏動畫搶畫面
+      setTimeout(open, 120);
+    }
+  }
+
+  // 事件
+  backdrop.addEventListener('click', close);
+  if(closeBtn) closeBtn.addEventListener('click', close);
+  if(laterBtn) laterBtn.addEventListener('click', close);
+  if(confirmBtn) confirmBtn.addEventListener('click', () => {
+    if(dontShow && dontShow.checked){
+      localStorage.setItem(KEY, String(DEADLINE_TS));
+    }
+    close();
+  });
+})();
