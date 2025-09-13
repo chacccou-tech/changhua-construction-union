@@ -1,48 +1,48 @@
 /* 進入頁面（每次）都置頂，但網址保留 #y114 */
-(() => {
-  const HASH = '#y114';
+// (() => {
+//   const HASH = '#y114';
 
-  // 一律關閉瀏覽器的自動還原捲動
-  try { history.scrollRestoration = 'manual'; } catch {}
+//   // 一律關閉瀏覽器的自動還原捲動
+//   try { history.scrollRestoration = 'manual'; } catch {}
 
-  // 暫時移除錨點 id，避免載入時自動跳錨點
-  const detach = () => {
-    if (location.hash !== HASH) return;
-    const id = HASH.slice(1);
-    const el = document.getElementById(id);
-    if (el && !el.hasAttribute('data-anchor-id')) {
-      el.setAttribute('data-anchor-id', id);
-      el.removeAttribute('id');
-    }
-  };
+//   // 暫時移除錨點 id，避免載入時自動跳錨點
+//   const detach = () => {
+//     if (location.hash !== HASH) return;
+//     const id = HASH.slice(1);
+//     const el = document.getElementById(id);
+//     if (el && !el.hasAttribute('data-anchor-id')) {
+//       el.setAttribute('data-anchor-id', id);
+//       el.removeAttribute('id');
+//     }
+//   };
 
-  // 置頂後再把 id 還原（讓之後的錨點行為正常）
-  const restoreAndTop = () => {
-    if (location.hash !== HASH) return;
-    requestAnimationFrame(() => {
-      window.scrollTo(0, 0);
-      // 圖片/字型載入後可能撐高版面，再保險置頂一次
-      setTimeout(() => {
-        window.scrollTo(0, 0);
-        const holder = document.querySelector('[data-anchor-id]');
-        if (holder) {
-          holder.id = holder.getAttribute('data-anchor-id');
-          holder.removeAttribute('data-anchor-id');
-        }
-      }, 100);
-    });
-  };
+//   // 置頂後再把 id 還原（讓之後的錨點行為正常）
+//   const restoreAndTop = () => {
+//     if (location.hash !== HASH) return;
+//     requestAnimationFrame(() => {
+//       window.scrollTo(0, 0);
+//       // 圖片/字型載入後可能撐高版面，再保險置頂一次
+//       setTimeout(() => {
+//         window.scrollTo(0, 0);
+//         const holder = document.querySelector('[data-anchor-id]');
+//         if (holder) {
+//           holder.id = holder.getAttribute('data-anchor-id');
+//           holder.removeAttribute('data-anchor-id');
+//         }
+//       }, 100);
+//     });
+//   };
 
-  // 每次載入都執行（含重新整理）
-  detach();
-  document.addEventListener('DOMContentLoaded', restoreAndTop, { once: true });
-  window.addEventListener('load', restoreAndTop, { once: true });
+//   // 每次載入都執行（含重新整理）
+//   detach();
+//   document.addEventListener('DOMContentLoaded', restoreAndTop, { once: true });
+//   window.addEventListener('load', restoreAndTop, { once: true });
 
-  // 從 bfcache 回來（行動版 Safari/Chrome 常見）
-  window.addEventListener('pageshow', (e) => {
-    if (e.persisted) { detach(); restoreAndTop(); }
-  });
-})();
+//   // 從 bfcache 回來（行動版 Safari/Chrome 常見）
+//   window.addEventListener('pageshow', (e) => {
+//     if (e.persisted) { detach(); restoreAndTop(); }
+//   });
+// })();
 
 /* === 首次載入一律置頂（無錨點時）=== */
 (() => {
@@ -121,17 +121,18 @@ const NEWS = [
 const DOWNLOADS = [
   {
     title: "辦理入會加保需知（第5版，114.09.12）",
-    href: "./downloads/《入會》辦理入會加保需知(第5版，114.09.12.).docx",
-    size: "DOCX",
+    href: "./downloads/《入會》辦理入會加保需知(第5版，114.09.12.).pdf",
+    size: "PDF",
     updated: "2025-09-12"
   },
   {
     title: "會員勞健保調整薪資申請書",
-    href: "./downloads/會員勞健保調整薪資申請書.docx",
-    size: "DOCX",
-    updated: "2025-09-01"
+    href: "./downloads/會員勞健保調整薪資申請書.pdf",
+    size: "PDF",
+    updated: "2025-09-13"
   }
 ];
+
 
 
 // ======== 工具函式 ========
@@ -610,7 +611,10 @@ const ANNALS = [
       if (c.classList.contains('active') && isMobile()) c.scrollIntoView({ inline:'center', block:'nearest' });
     });
 
-    history.replaceState(null, '', `#y${y.year}`);
+    - history.replaceState(null, '', `#y${y.year}`);
++ if (allowHashUpdate) {
++   history.replaceState(null, '', `#y${y.year}`);
++ }
   }
 
   // 事件：點年份（索引／膠囊）

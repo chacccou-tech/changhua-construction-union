@@ -31,9 +31,9 @@
     }
 
     // 2) 若網址帶 #downloads（或任何 #），先清掉，避免一進站就跳錨點
-    if (location.hash) {
-      history.replaceState(null, '', location.pathname + location.search);
-    }
+    // if (location.hash) {
+    //   history.replaceState(null, '', location.pathname + location.search);
+    // }
 
     // 3) 定義回頂端（暫時關 smooth，避免瀏覽器動畫到舊位置）
     function jumpToTop() {
