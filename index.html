@@ -1,5 +1,12 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
+<script>
+  try { history.scrollRestoration = 'manual'; } catch(e){}
+  window.addEventListener('pageshow', () => { window.scrollTo(0, 0); }, {once:true});
+  window.addEventListener('load',      () => { window.scrollTo(0, 0); }, {once:true});
+</script>
+
 <head>
   <meta charset="utf-8" />
   <meta name="google-site-verification" content="yw41Aodo8vy8UU1quHkvTlKs_YgJfmR8fe54qJXh8v0" />
@@ -380,7 +387,7 @@
   </div>
 </div>
 
-  <script src="app.js?v=20250913" defer></script>
+  <script src="app.js" defer></script>
 
   <!-- JSON-LD 結構化資料 -->
   <script type="application/ld+json">

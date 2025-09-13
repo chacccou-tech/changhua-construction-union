@@ -823,3 +823,7 @@ html, body { overflow-x: hidden; }
     radial-gradient(800px 260px at 12% -8%, rgba(43,142,230,.12), transparent 60%),
     radial-gradient(800px 260px at 110% -8%, rgba(22,163,74,.12), transparent 60%);
 }
+
+html {
+  overflow-anchor: none;
+}
