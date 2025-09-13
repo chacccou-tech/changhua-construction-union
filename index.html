@@ -127,56 +127,22 @@
 <!-- 創會大事記（民國74年） -->
 <section id="history" aria-labelledby="history-title">
   <div class="section-head">
-    <h2 id="history-title">創會大事記</h2>
+    <h2 id="history-title">歷年重要記事</h2>
   </div>
 
-  <div class="history-wrap">
-    <!-- 左：會館外觀 -->
+  <div class="annals-wrap">
+    <!-- 左：會館圖片 -->
     <figure class="history-figure">
       <img src="./會館.jpg" alt="彰化縣營造業職業工會 會館外觀" />
       <figcaption>彰化縣營造業職業工會 會館</figcaption>
     </figure>
 
-    <!-- 右：大事記（條列） -->
-    <ul class="milestones">
-      <li>
-        <div class="m-date"><time datetime="1985-04-15">民國74年 4月15日</time></div>
-        <div class="m-body">在員林鎮祝樂餐廳成立大會，會員有101名。大會通過預算、工作計劃章程及投保勞工保險，並選舉首屆理監事。</div>
-      </li>
-
-      <li>
-        <div class="m-date"><time datetime="1985-04-19">4月19日</time></div>
-        <div class="m-body">召開第1次理監事會，選舉林源豐為常理、游秋軒為常監；通過會址設於彰化市，並聘吳鴻祺為秘書、吳國印與蔡寶美為幹事。</div>
-      </li>
-
-      <li>
-        <div class="m-date"><time datetime="1985-04-27">4月27日</time></div>
-        <div class="m-body">依法向彰化縣政府申請登記，核准並核登「彰府社勞字第230號」工會登記證書。</div>
-      </li>
-
-      <li>
-        <div class="m-date"><time datetime="1985-04-27">4月27日</time></div>
-        <div class="m-body">依法申請加入彰化縣總工會為會員，核發「彰總工證字第145號」會員證書。</div>
-      </li>
-
-      <li>
-        <div class="m-date"><time datetime="1985-04-27">4月27日</time></div>
-        <div class="m-body">依法向台閩地區勞工保險局申請投保會員勞工保，核發「職字第721號」勞工保險證，自74.04.27 起生效。</div>
-      </li>
-
-      <li>
-        <div class="m-date"><time datetime="1985-04-27">4月27日</time></div>
-        <div class="m-body">依法申請加入臺灣省營造業職業工會聯合會為會員，核發「省聯會證字第17號」會員證書。</div>
-      </li>
-
-      <li>
-        <div class="m-date"><time datetime="1985-04-29">4月29日</time></div>
-        <div class="m-body">向彰化郵局三支分局申請設立郵政劃撥帳號，核准設立，帳號：中字02642662。</div>
-      </li>
-    </ul>
+    <!-- 右：年表（JS 產生） -->
+    <div class="annals-list" id="annalsList" aria-live="polite"></div>
   </div>
-  
 </section>
+
+
 <!-- 關於本會（保留：營業時間＋地圖） -->
 <section id="about" class="footer-info" aria-labelledby="about-title">
   <h2 id="about-title">關於本網站</h2>
@@ -244,10 +210,10 @@
  <footer class="union-footer" role="contentinfo">
   
   <!-- 置中的 TOP Pills -->
-  <a href="#top" class="uf-top" aria-label="回到頁面頂部">
+  <!-- <a href="#top" class="uf-top" aria-label="回到頁面頂部">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 15l-6-6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
     TOP
-  </a>
+  </a> -->
 
   <div class="uf-inner">
     <!-- 左：LOGO + 標題 -->
@@ -264,7 +230,7 @@
       <a href="#top">首頁</a><span aria-hidden="true">·</span>
       <a href="#news">最新消息</a><span aria-hidden="true">·</span>
       <a href="#downloads">下載專區</a><span aria-hidden="true">·</span>
-      <a href="tel:047233698">加入工會</a>
+      
     </nav>
 
     <!-- 右：聯絡資訊 + 快捷鈕 -->
@@ -304,7 +270,7 @@
       <button class="modal-close" id="annClose" aria-label="關閉公告視窗">×</button>
     </div>
 
-    <h3 id="annTitle" class="modal-title">重要訊息提醒(測試中)</h3>
+    <h3 id="annTitle" class="modal-title">重要訊息提醒</h3>
 
     <div id="annDesc" class="modal-content">
       <ol class="ann-list">

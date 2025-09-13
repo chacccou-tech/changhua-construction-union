@@ -559,3 +559,176 @@ html, body { overflow-x: hidden; }
 
 /* 徽章不收縮，避免被擠成小圓點 */
 .n-head .badge{ flex: 0 0 auto; white-space: nowrap; }
+
+
+/* 歷年重要記事（RWD 時間軸，無搜尋） */
+.annals-wrap{
+  max-width:1100px; margin:0 auto; padding:0 20px 24px;
+  display:grid; grid-template-columns:1fr 1.2fr; gap:16px; align-items:start;
+}
+@media (max-width:900px){ .annals-wrap{ grid-template-columns:1fr } }
+
+.annals-list{ display:grid; gap:12px; }
+
+.year-card{ border:1px solid var(--border); border-radius:16px; background:#fff; box-shadow:var(--shadow); overflow:hidden }
+.year-card > summary{
+  list-style:none; cursor:pointer; padding:12px 16px; display:flex; align-items:center; gap:10px;
+  background:linear-gradient(180deg,#f9fbff,#f1f6ff);
+  border-bottom:1px dashed var(--border);
+}
+.year-badge{
+  flex:0 0 auto; display:inline-grid; place-items:center;
+  width:58px; height:32px; border-radius:999px;
+  font-weight:900; color:#123a92; background:#e9f2ff; border:1px solid #cfe0ff;
+}
+.year-title{ font-weight:900; color:var(--text) }
+.year-count{ margin-left:auto; font-size:13px; color:var(--muted) }
+.year-body{ padding:10px 16px 14px }
+
+.ev{ position:relative; padding:10px 6px 10px 20px; border-left:3px solid #e6e9f3; }
+.ev::before{ content:""; position:absolute; left:-7px; top:18px; width:10px; height:10px; border-radius:50%; background:#2b8ee6; box-shadow:0 0 0 3px rgba(43,142,230,.15) }
+.ev-date{ font-weight:800; color:var(--text) }
+.ev-text{ color:color-mix(in lab, var(--text) 92%, transparent); margin-top:2px }
+
+/* 防溢出 */
+.ev-text, .year-title{ word-break:break-word; overflow-wrap:anywhere; }
+
+/* 歷年重要記事：年份索引 + 事件面板 */
+.annals-2col{
+  display:grid;
+  grid-template-columns: 220px 1fr;
+  gap:14px;
+}
+@media (max-width:900px){
+  .annals-2col{ grid-template-columns:1fr; }
+}
+
+/* 左側：年份索引（桌機 sticky；手機橫向可滑） */
+.ann-year-index{
+  position: sticky;
+  top: 76px;                 /* 視你的 navbar 高度微調 */
+  align-self: start;
+  display: grid;
+  gap:8px;
+}
+@media (max-width:900px){
+  .ann-year-index{
+    position: static;
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    padding-bottom:6px;
+    scroll-snap-type:x mandatory;
+  }
+}
+.y-btn{
+  width:100%;
+  display:flex; align-items:center; gap:8px; justify-content:space-between;
+  padding:10px 12px;
+  border-radius:12px;
+  background:#fff;
+  border:1px solid var(--border);
+  box-shadow: var(--shadow);
+  cursor:pointer;
+  white-space:nowrap;
+  scroll-snap-align:start;
+}
+.y-btn .y{ font-weight:900; color:#123a92 }
+.y-btn .c{ font-size:12px; color:var(--muted) }
+.y-btn.active{
+  border-color:#9cc3ff;
+  background:linear-gradient(180deg,#f9fbff,#eef5ff);
+}
+
+/* 右側：面板 */
+.ann-panel{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:16px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.ann-panel-head{
+  display:flex; align-items:center; gap:10px;
+  padding:12px 14px;
+  background:linear-gradient(180deg,#f9fbff,#f1f6ff);
+  border-bottom:1px dashed var(--border);
+}
+.ann-year-title{ margin:0; font-size:18px; font-weight:900; color:var(--text) }
+.ann-year-count{ margin-left:auto; color:var(--muted); font-size:13px }
+
+.evs{ list-style:none; padding:12px 14px; margin:0; display:grid; gap:10px }
+.ev{
+  position:relative; padding:8px 6px 8px 18px;
+  border-left:3px solid #e6e9f3;
+}
+.ev::before{
+  content:""; position:absolute; left:-7px; top:14px;
+  width:10px; height:10px; border-radius:50%;
+  background:#2b8ee6; box-shadow:0 0 0 3px rgba(43,142,230,.15);
+}
+.ev-date{ font-weight:800; color:var(--text) }
+.ev-text{ color: color-mix(in lab, var(--text) 92%, transparent); margin-top:2px;
+  word-break:break-word; overflow-wrap:anywhere;
+}
+
+.ann-actions{ padding:0 14px 14px }
+.ann-actions .btn{ padding:8px 12px; border-radius:10px }
+
+
+/* ===== 三欄內的兩欄（年份索引 + 內容） ===== */
+.annals-3col{
+  display:grid; grid-template-columns: 280px 1fr; gap:16px; align-items:start;
+}
+
+/* 年份索引（與圖片等高；內部可滾動） */
+.year-rail{
+  background:#fff; border:1px solid var(--border); border-radius:16px; box-shadow:var(--shadow);
+  display:flex; flex-direction:column; min-height:280px; overflow:hidden;
+}
+.rail-head{
+  display:flex; align-items:center; justify-content:space-between; gap:8px;
+  padding:6px 8px; border-bottom:1px dashed var(--border);
+  background:linear-gradient(180deg,#f9fbff,#f1f6ff);
+}
+.rail-caption{ font-weight:900; color:#123a92 }
+.rail-jump{
+  width:30px; height:30px; border-radius:10px; border:1px solid var(--border);
+  background:#fff; cursor:pointer;
+}
+.rail-body{
+  padding:8px; display:flex; flex-direction:column; gap:8px;
+  overflow:auto; height:100%;
+}
+.rail-sep{
+  margin:2px 0 0; padding:2px 6px; font-size:12px; color:var(--muted);
+}
+
+/* 年份按鈕 */
+.y-item{
+  width:100%; display:flex; align-items:center; justify-content:space-between; gap:8px;
+  padding:10px 12px; border-radius:12px; border:1px solid var(--border); background:#fff; box-shadow:var(--shadow);
+  cursor:pointer; white-space:nowrap;
+}
+.y-item .y{ font-weight:900; color:#123a92 }
+.y-item .c{ font-size:12px; color:var(--muted) }
+.y-item.active{ border-color:#9cc3ff; background:linear-gradient(180deg,#f9fbff,#eef5ff) }
+
+/* 內容標頭 + 行動版膠囊列 */
+.ann-panel-head{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:6px }
+.ann-year-title{ margin:0; font-size:20px; font-weight:900 }
+.ann-year-count{ color:var(--muted) }
+.ann-chip-row{ display:none }                /* 桌機隱藏，手機顯示 */
+.ann-chip-row .chip{
+  padding:8px 12px; border-radius:999px; border:1px solid var(--border); background:#fff; cursor:pointer;
+  white-space:nowrap; box-shadow:0 1px 0 rgba(0,0,0,.02);
+}
+.ann-chip-row .chip.active{ background:var(--chip-on); border-color:#bcd6ff }
+
+/* RWD：手機改單欄，年份索引隱藏、顯示橫向膠囊 */
+@media (max-width:900px){
+  .annals-3col{ grid-template-columns: 1fr; }
+  .year-rail{ display:none }
+  .ann-chip-row{ display:flex; overflow:auto; gap:8px; padding:4px 0; scroll-snap-type:x mandatory }
+  .ann-chip-row .chip{ flex:0 0 auto; scroll-snap-align:center }
+}
