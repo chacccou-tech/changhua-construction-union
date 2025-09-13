@@ -1,21 +1,43 @@
-/* === 回到頁首（每次載入 + 返回快取 bfcache）=== */
-(() => {
-  try { history.scrollRestoration = 'manual'; } catch {}
-
-  function forceTop(){
-    const html = document.documentElement;
-    const prev = html.style.scrollBehavior;
-    html.style.scrollBehavior = 'auto';
-    // 多次嘗試，涵蓋不同瀏覽器排版時序
-    window.scrollTo(0, 0);
-    requestAnimationFrame(() => window.scrollTo(0, 0));
-    setTimeout(() => { window.scrollTo(0, 0); html.style.scrollBehavior = prev; }, 120);
+/* ==== 進站一律置頂（與公告是否顯示無關）==== */
+(function forceTopOnFirstLoad(){
+  // 停用瀏覽器自動還原卷動位置
+  if ('scrollRestoration' in history) {
+    try { history.scrollRestoration = 'manual'; } catch {}
   }
 
-  document.addEventListener('DOMContentLoaded', forceTop, { once:true });
-  window.addEventListener('load',        forceTop, { once:true });
-  window.addEventListener('pageshow',    forceTop);  // 含 bfcache
+  // 有錨點就尊重錨點（例如 #news / #history），否則強制回頂
+  const respectHash = !!location.hash && location.hash !== '#top';
+
+  function toTopHard(){
+    if (respectHash) return;
+
+    const html = document.documentElement;
+    const prev = html.style.scrollBehavior;
+    html.style.scrollBehavior = 'auto'; // 關閉平滑動畫
+
+    const doScroll = () => {
+      window.scrollTo(0, 0);
+      document.body.scrollTop = 0;            // iOS 備援
+      document.documentElement.scrollTop = 0; // 另一備援
+      // 若有 Hero，就再保險讓它對齊頂端
+      document.getElementById('hero')?.scrollIntoView({ block: 'start', behavior: 'auto' });
+    };
+
+    doScroll();
+    requestAnimationFrame(() => {
+      doScroll();
+      setTimeout(() => { doScroll(); html.style.scrollBehavior = prev; }, 120);
+    });
+  }
+
+  // 初次進站（非 bfcache）就置頂
+  window.addEventListener('pageshow', (e) => { if (!e.persisted) toTopHard(); }, { once: true });
+  // 仍加一個載入保險
+  window.addEventListener('load', toTopHard, { once: true });
+  // 有些瀏覽器在 DOM ready 就能成功
+  document.addEventListener('DOMContentLoaded', () => requestAnimationFrame(toTopHard), { once: true });
 })();
+
 
 /* ======== 可編輯資料：最新消息 ======== */
 const NEWS = [
@@ -231,7 +253,9 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
 })();
 
 /* === 重要公告 Modal（修正作用域：不外漏變數） === */
+/* === 重要公告 Modal（關閉後強制回到最上方 Hero） === */
 (function announcementModal(){
+  // 公告的顯示期限（到 2025-11-20 23:59:59 +08）
   const DEADLINE_TS = new Date('2025-11-20T23:59:59+08:00').getTime();
   const KEY = 'union-ann-hide-until-v1';
 
@@ -239,36 +263,60 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
   const modal = document.getElementById('annModal');
   if(!backdrop || !modal) return;
 
-  const closeBtn = document.getElementById('annClose');
+  const closeBtn   = document.getElementById('annClose');
   const confirmBtn = document.getElementById('annConfirm');
-  const laterBtn = document.getElementById('annLater');
-  const dontShow = document.getElementById('annDontShow');
+  const laterBtn   = document.getElementById('annLater');
+  const dontShow   = document.getElementById('annDontShow');
+
+  // 關閉時，保證回到最上方（避免有時被瀏覽器排版/快取影響）
+  function jumpToTopHard() {
+    const html = document.documentElement;
+    const prev = html.style.scrollBehavior;
+    html.style.scrollBehavior = 'auto';     // 關掉平滑動畫，直接瞬間到頂
+
+    // 多次嘗試 + RAF，涵蓋 iOS Safari / Chrome 可能的排版延遲
+    const doScroll = () => {
+      window.scrollTo(0, 0);
+      document.body.scrollTop = 0;              // iOS Safari 備援
+      document.documentElement.scrollTop = 0;   // 另一種備援
+      const hero = document.getElementById('hero');
+      // 如有 Hero，就直接對它做 scrollIntoView（有些瀏覽器較穩）
+      hero?.scrollIntoView({ block: 'start', inline: 'nearest', behavior: 'auto' });
+    };
+
+    doScroll();
+    requestAnimationFrame(() => {
+      doScroll();
+      setTimeout(() => { doScroll(); html.style.scrollBehavior = prev; }, 150);
+    });
+  }
 
   const open = () => {
-    document.body.classList.add('modal-open');
-    backdrop.hidden = false; modal.hidden = false;
+    document.body.classList.add('modal-open');  // CSS：body.modal-open { overflow:hidden; }
+    backdrop.hidden = false;
+    modal.hidden = false;
     (closeBtn || confirmBtn || modal).focus?.({ preventScroll: true });
     trapFocus(true);
   };
+
   const close = () => {
     trapFocus(false);
-    backdrop.hidden = true; modal.hidden = true;
+    backdrop.hidden = true;
+    modal.hidden = true;
     document.body.classList.remove('modal-open');
+    // 關閉後立刻強制回頂，讓第一眼看到 Hero
+    jumpToTopHard();
   };
 
-  // 讓 Tab 焦點圈定在對話框
+  // 對話框內的焦點圈定（鍵盤操作可用）
   let focusHandler;
   function trapFocus(enable){
-    if(!enable){
-      document.removeEventListener('keydown', focusHandler);
-      return;
-    }
+    if(!enable){ document.removeEventListener('keydown', focusHandler); return; }
     const selectors = 'a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])';
-    const getFocusables = () => Array.from(modal.querySelectorAll(selectors)).filter(el => !el.hasAttribute('disabled'));
     focusHandler = (e) => {
-      if(e.key === 'Escape') { e.preventDefault(); close(); return; }
+      if(e.key === 'Escape'){ e.preventDefault(); close(); return; }
       if(e.key !== 'Tab') return;
-      const f = getFocusables();
+      const f = Array.from(modal.querySelectorAll(selectors)).filter(el => !el.disabled);
       if(!f.length) return;
       const first = f[0], last = f[f.length - 1];
       if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
@@ -277,22 +325,24 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
     document.addEventListener('keydown', focusHandler);
   }
 
+  // 初始是否顯示（沒到截止、且未選「不要再顯示」）
   const now = Date.now();
   const hideUntil = parseInt(localStorage.getItem(KEY) || '0', 10);
   if (now <= DEADLINE_TS && !(hideUntil && now < hideUntil)) {
+    // 等 100~150ms，避開首次排版抖動
     setTimeout(open, 120);
   }
 
+  // 事件
   backdrop.addEventListener('click', close);
   closeBtn?.addEventListener('click', close);
   laterBtn?.addEventListener('click', close);
   confirmBtn?.addEventListener('click', () => {
-    if(dontShow?.checked){
-      localStorage.setItem(KEY, String(DEADLINE_TS));
-    }
+    if(dontShow?.checked){ localStorage.setItem(KEY, String(DEADLINE_TS)); }
     close();
   });
 })();
+
 
 /* === 歷年重要記事資料（依你提供內容整理） === */
 const ANNALS = [
@@ -522,9 +572,9 @@ const ANNALS = [
       if (c.classList.contains('active') && isMobile()) c.scrollIntoView({ inline:'center', block:'nearest' });
     });
 
-    if (allowHashUpdate) {
-      history.replaceState(null, '', `#y${y.year}`);
-    }
+    // if (allowHashUpdate) {
+    //   history.replaceState(null, '', `#y${y.year}`);
+    // }
   }
 
   // 事件：點年份（索引／膠囊）
