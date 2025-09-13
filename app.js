@@ -1,3 +1,49 @@
+/* 進入頁面（每次）都置頂，但網址保留 #y114 */
+(() => {
+  const HASH = '#y114';
+
+  // 一律關閉瀏覽器的自動還原捲動
+  try { history.scrollRestoration = 'manual'; } catch {}
+
+  // 暫時移除錨點 id，避免載入時自動跳錨點
+  const detach = () => {
+    if (location.hash !== HASH) return;
+    const id = HASH.slice(1);
+    const el = document.getElementById(id);
+    if (el && !el.hasAttribute('data-anchor-id')) {
+      el.setAttribute('data-anchor-id', id);
+      el.removeAttribute('id');
+    }
+  };
+
+  // 置頂後再把 id 還原（讓之後的錨點行為正常）
+  const restoreAndTop = () => {
+    if (location.hash !== HASH) return;
+    requestAnimationFrame(() => {
+      window.scrollTo(0, 0);
+      // 圖片/字型載入後可能撐高版面，再保險置頂一次
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        const holder = document.querySelector('[data-anchor-id]');
+        if (holder) {
+          holder.id = holder.getAttribute('data-anchor-id');
+          holder.removeAttribute('data-anchor-id');
+        }
+      }, 100);
+    });
+  };
+
+  // 每次載入都執行（含重新整理）
+  detach();
+  document.addEventListener('DOMContentLoaded', restoreAndTop, { once: true });
+  window.addEventListener('load', restoreAndTop, { once: true });
+
+  // 從 bfcache 回來（行動版 Safari/Chrome 常見）
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) { detach(); restoreAndTop(); }
+  });
+})();
+
 /* === 首次載入一律置頂（無錨點時）=== */
 (() => {
   // 1) 關掉瀏覽器的自動捲動還原（Chrome/Android、iOS Safari 都會用到）
