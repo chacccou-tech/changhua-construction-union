@@ -1,3 +1,25 @@
+/* === 首次載入一律置頂（無錨點時）=== */
+(() => {
+  // 1) 關掉瀏覽器的自動捲動還原（Chrome/Android、iOS Safari 都會用到）
+  if ('scrollRestoration' in history) {
+    try { history.scrollRestoration = 'manual'; } catch {}
+  }
+
+  // 有錨點就尊重錨點（例如 #news / #history）
+  const hasHash = !!location.hash && location.hash !== '#top';
+
+  // 用 pageshow 可同時涵蓋一般載入與 iOS Safari 特性
+  window.addEventListener('pageshow', (e) => {
+    // BFCache（返回上一頁）就不要動原本的位置
+    if (e.persisted) return;
+    if (hasHash) return;
+
+    // 置頂：多次嘗試可避免某些瀏覽器位移
+    requestAnimationFrame(() => window.scrollTo(0, 0));
+    setTimeout(() => window.scrollTo(0, 0), 50);
+    setTimeout(() => window.scrollTo(0, 0), 250);
+  }, { once: true });
+})();
 
 
 // ======== 可編輯資料：最新消息 ========
