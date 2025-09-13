@@ -1,14 +1,4 @@
-/* === 第一次載入時固定從頁面頂端開始（含清除 hash） === */
-(() => {
-  const KEY = 'first-load-to-top-v1';
-  if (!sessionStorage.getItem(KEY)) {
-    sessionStorage.setItem(KEY, '1');
-    // 如果 URL 有 #downloads（或任何 hash），先清掉
-    if (location.hash) history.replaceState(null, '', location.pathname + location.search);
-    // 等一幀，避免版面尚未完成計算就捲動
-    requestAnimationFrame(() => window.scrollTo({ top: 0, left: 0, behavior: 'auto' }));
-  }
-})();
+
 
 // ======== 可編輯資料：最新消息 ========
 const NEWS = [

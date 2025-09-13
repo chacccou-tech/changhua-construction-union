@@ -20,6 +20,52 @@
 
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%232871ff'/%3E%3Ctext x='50' y='58' text-anchor='middle' font-size='52' font-family='Arial' fill='white'%3E工%3C/text%3E%3C/svg%3E" />
   <link rel="stylesheet" href="styles.css" />
+
+
+
+
+ <script>
+    // 1) 禁用瀏覽器的自動捲回（Chrome/Safari 都支援）
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+
+    // 2) 若網址帶 #downloads（或任何 #），先清掉，避免一進站就跳錨點
+    if (location.hash) {
+      history.replaceState(null, '', location.pathname + location.search);
+    }
+
+    // 3) 定義回頂端（暫時關 smooth，避免瀏覽器動畫到舊位置）
+    function jumpToTop() {
+      const html = document.documentElement;
+      const prev = html.style.scrollBehavior;
+      html.style.scrollBehavior = 'auto';
+      window.scrollTo(0, 0);
+      // 下一幀再恢復原本的 smooth 設定
+      requestAnimationFrame(() => { html.style.scrollBehavior = prev; });
+    }
+
+    // 4) DOM 解析後就跳一次（兩幀後更保險）
+    window.addEventListener('DOMContentLoaded', () => {
+      requestAnimationFrame(() => requestAnimationFrame(jumpToTop));
+    }, { once: true });
+
+    // 5) 完整載入後再保險跳一次
+    window.addEventListener('load', () => {
+      setTimeout(jumpToTop, 0);
+      setTimeout(jumpToTop, 300); // iOS/Safari 有時會晚一點還原
+    }, { once: true });
+
+    // 6) 從 bfcache 回來（iOS Safari 常見）也強制回頂
+    window.addEventListener('pageshow', (e) => {
+      if (e.persisted) jumpToTop();
+    });
+  </script>
+
+
+
+
+
 </head>
 <body>
   <!-- 頁首（手機含漢堡選單） -->
