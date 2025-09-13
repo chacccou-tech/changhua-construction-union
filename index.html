@@ -23,24 +23,28 @@
 </head>
 <body>
   <!-- 頁首（手機含漢堡選單） -->
-  <header class="navbar" role="banner">
-    <div class="nav-inner">
-      <a class="brand" href="#top" aria-label="回到首頁">
-        <span class="brand-badge" aria-hidden="true">工</span>
-        <span>彰化縣營造業職業工會</span>
-      </a>
+ <header class="navbar" role="banner">
+  <div class="nav-inner">
+    <a class="brand" href="#top" aria-label="回到首頁">
+      <span class="brand-badge" aria-hidden="true">
+        <img src="./營造工會LOGO.jpg" alt="" />
+      </span>
+      <span class="brand-name">彰化縣營造業職業工會</span>
+    </a>
 
-      <button class="menu-btn" id="menuToggle" aria-label="開啟主選單" aria-controls="primaryNav" aria-expanded="false">
-        <span class="bar"></span><span class="bar"></span><span class="bar"></span>
-      </button>
+    <button class="menu-btn" id="menuToggle" aria-label="開啟主選單" aria-controls="primaryNav" aria-expanded="false">
+      <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+    </button>
 
-      <nav class="nav-links" id="primaryNav" aria-label="主要導覽">
-        <a href="#news">最新消息</a>
-        <a href="#downloads">下載專區</a>
-        <a href="#about">關於</a>
-      </nav>
-    </div>
-  </header>
+    <nav class="nav-links" id="primaryNav" aria-label="主要導覽">
+      <a href="#news">最新消息</a>
+      <!-- 將原本的 #downloads 改為 #history -->
+      <a href="#history">關於本會</a>
+      <a href="#about">聯絡我們</a>
+    </nav>
+  </div>
+</header>
+
 
   <!-- 頂部錨點 -->
   <div id="top" aria-hidden="true"></div>
@@ -49,7 +53,7 @@
 
   <main>
     <!-- 最新消息（列表 + 分類按鈕 + 搜尋） -->
-    <section id="news" aria-labelledby="news-title">
+    <!-- <section id="news" aria-labelledby="news-title">
       <div class="section-head">
         <h2 id="news-title">最新消息</h2>
         <div class="tools">
@@ -62,10 +66,10 @@
         </div>
       </div>
       <div class="news-list" id="newsList" aria-live="polite"></div>
-    </section>
+    </section> -->
 
     <!-- 下載專區 -->
-    <section id="downloads" aria-labelledby="dl-title">
+    <!-- <section id="downloads" aria-labelledby="dl-title">
       <div class="section-head">
         <h2 id="dl-title">下載專區（PDF）</h2>
         <div class="tools">
@@ -77,23 +81,64 @@
         </div>
       </div>
       <div class="dl-grid" id="dlGrid" aria-live="polite"></div>
-    </section>
-  </main>
+    </section> -->
+  
+
+<!-- 最新消息＋下載專區：兩欄排版 -->
+<div class="two-col" id="updates" aria-label="最新消息與下載專區">
+  <!-- 最新消息（列表 + 搜尋） -->
+  <section id="news" aria-labelledby="news-title">
+    <div class="section-head">
+      <h2 id="news-title">最新消息</h2>
+      <div class="tools">
+        <div class="search">
+          <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+          <label for="newsSearch" class="visually-hidden">搜尋最新消息</label>
+          <input id="newsSearch" type="search" placeholder="搜尋公告、關鍵詞或日期…" autocomplete="off" />
+        </div>
+        <!-- 單一膠囊做為標示用 -->
+        <div class="chips" id="newsChips" aria-label="分類標示"></div>
+      </div>
+    </div>
+    <div class="news-list" id="newsList" aria-live="polite"></div>
+  </section>
+
+  <!-- 下載專區 -->
+  <section id="downloads" aria-labelledby="dl-title">
+    <div class="section-head">
+      <h2 id="dl-title">下載專區（PDF）</h2>
+      <div class="tools">
+        <div class="search">
+          <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+          <label for="dlSearch" class="visually-hidden">搜尋下載資料</label>
+          <input id="dlSearch" type="search" placeholder="搜尋檔名或用途…" autocomplete="off" />
+        </div>
+      </div>
+    </div>
+    <div class="dl-grid" id="dlGrid" aria-live="polite"></div>
+  </section>
+</div>
+
+
+
+
+
+
 <!-- 創會大事記（民國74年） -->
 <section id="history" aria-labelledby="history-title">
   <div class="section-head">
-    <h2 id="history-title">創會大事記（民國XX年）</h2>
+    <h2 id="history-title">創會大事記</h2>
   </div>
 
   <div class="history-wrap">
     <!-- 左：會館外觀 -->
-    <!-- <figure class="history-figure">
+    <figure class="history-figure">
       <img src="./會館.jpg" alt="彰化縣營造業職業工會 會館外觀" />
       <figcaption>彰化縣營造業職業工會 會館</figcaption>
-    </figure> -->
+    </figure>
 
     <!-- 右：大事記（條列） -->
-    <!-- <ul class="milestones">
+    <ul class="milestones">
       <li>
         <div class="m-date"><time datetime="1985-04-15">民國74年 4月15日</time></div>
         <div class="m-body">在員林鎮祝樂餐廳成立大會，會員有101名。大會通過預算、工作計劃章程及投保勞工保險，並選舉首屆理監事。</div>
@@ -128,78 +173,124 @@
         <div class="m-date"><time datetime="1985-04-29">4月29日</time></div>
         <div class="m-body">向彰化郵局三支分局申請設立郵政劃撥帳號，核准設立，帳號：中字02642662。</div>
       </li>
-    </ul> -->
+    </ul>
+  </div>
+  
+</section>
+<!-- 關於本會（保留：營業時間＋地圖） -->
+<section id="about" class="footer-info" aria-labelledby="about-title">
+  <h2 id="about-title">關於本網站</h2>
+  <div class="footer-grid">
+    <!-- 左：聯絡＋營業時間 -->
+    <div class="card contact-hours">
+      <div class="ch-row">
+        <div class="ch-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M21 10c0 6-9 12-9 12S3 16 3 10a9 9 0 1 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <div class="ch-body">
+          <div class="ch-title">地址</div>
+          <div class="ch-text">彰化市曉陽路262-1號4樓</div>
+        </div>
+      </div>
+
+      <div class="ch-row">
+        <div class="ch-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.18 2 2 0 0 1 4.11 2h3"/></svg>
+        </div>
+        <div class="ch-body">
+          <div class="ch-title">電話</div>
+          <div class="ch-text"><a href="tel:047233698" aria-label="撥打 04-723-3698">04-723-3698</a></div>
+        </div>
+      </div>
+
+      <div class="ch-hours">
+        <div class="ch-hours-title">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+          營業時間
+        </div>
+        <ul class="hours-list">
+          <li class="d1"><span>星期一</span><span>08:30–17:30</span></li>
+          <li class="d2"><span>星期二</span><span>08:30–17:30</span></li>
+          <li class="d3"><span>星期三</span><span>08:30–17:30</span></li>
+          <li class="d4"><span>星期四</span><span>08:30–17:30</span></li>
+          <li class="d5"><span>星期五</span><span>08:30–17:30</span></li>
+          <li class="d6"><span>星期六</span><span class="closed">休息</span></li>
+          <li class="d7"><span>星期日</span><span class="closed">休息</span></li>
+        </ul>
+      </div>
+
+      <p class="muted" style="margin-top:8px">本會亦常被稱作「彰化縣營造職業工會」，兩者為同一單位。</p>
+    </div>
+
+    <!-- 右：Google 地圖 -->
+    <div class="card map-card">
+      <div class="map-wrap">
+        <iframe
+          title="彰化縣營造業職業工會 位置地圖"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          src="https://www.google.com/maps?q=彰化市曉陽路262-1號4樓&output=embed">
+        </iframe>
+      </div>
+      <div class="map-actions">
+        <a class="btn" target="_blank" rel="noopener"
+           href="https://www.google.com/maps/dir/?api=1&destination=彰化市曉陽路262-1號4樓">開啟 Google 地圖</a>
+      </div>
+    </div>
   </div>
 </section>
-
+</main>
   <!-- 頁尾（聯絡＋營業時間 合一卡片 + Google 地圖） -->
-  <footer role="contentinfo">
-    <section id="about" class="footer-info" aria-labelledby="about-title">
-      <h2 id="about-title">關於本網站</h2>
-      <div class="footer-grid">
-        <!-- 左：聯絡＋營業時間（HTML 保持一→日自然順序；桌機以 CSS 重排） -->
-        <!-- <div class="card contact-hours">
-          <div class="ch-row">
-            <div class="ch-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><path d="M21 10c0 6-9 12-9 12S3 16 3 10a9 9 0 1 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-            </div>
-            <div class="ch-body">
-              <div class="ch-title">地址</div>
-              <div class="ch-text">彰化市曉陽路262-1號4樓</div>
-            </div>
-          </div>
+ <footer class="union-footer" role="contentinfo">
+  
+  <!-- 置中的 TOP Pills -->
+  <a href="#top" class="uf-top" aria-label="回到頁面頂部">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 15l-6-6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    TOP
+  </a>
 
-          <div class="ch-row">
-            <div class="ch-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.3 1.77.54 2.61a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.47-1.47a2 2 0 0 1 2.11-.45c.84.24 1.71.42 2.61.54A2 2 0 0 1 22 16.92Z"/></svg>
-            </div>
-            <div class="ch-body">
-              <div class="ch-title">電話</div>
-              <div class="ch-text"><a href="tel:047233698" aria-label="撥打 04-723-3698">04-723-3698</a></div>
-            </div>
-          </div>
-
-          <div class="ch-hours">
-            <div class="ch-hours-title">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
-              營業時間
-            </div>
-            <ul class="hours-list">
-              <li class="d1"><span>星期一</span><span>08:30–17:00</span></li>
-              <li class="d2"><span>星期二</span><span>08:30–17:00</span></li>
-              <li class="d3"><span>星期三</span><span>08:30–17:00</span></li>
-              <li class="d4"><span>星期四</span><span>08:30–17:00</span></li>
-              <li class="d5"><span>星期五</span><span>08:30–17:00</span></li>
-              <li class="d6"><span>星期六</span><span class="closed">休息</span></li>
-              <li class="d7"><span>星期日</span><span class="closed">休息</span></li>
-            </ul>
-          </div>
-
-          <p class="muted" style="margin-top:8px">本會亦常被稱作「彰化縣營造職業工會」，兩者為同一單位。</p>
-        </div> -->
-
-        <!-- 右：Google 地圖 -->
-        <!-- <div class="card map-card">
-          <div class="map-wrap">
-            <iframe
-              title="彰化縣營造業職業工會 位置地圖"
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-              src="https://www.google.com/maps?q=彰化市曉陽路262-1號4樓&output=embed">
-            </iframe>
-          </div>
-          <div class="map-actions">
-            <a class="btn" target="_blank" rel="noopener"
-               href="https://www.google.com/maps/dir/?api=1&destination=彰化市曉陽路262-1號4樓">開啟 Google 地圖</a>
-          </div>
-        </div> -->
+  <div class="uf-inner">
+    <!-- 左：LOGO + 標題 -->
+    <div class="uf-left">
+      <img src="./會徽.jpg" alt="彰化縣營造業職業工會 會徽" class="uf-logo" />
+      <div class="uf-title">
+        <div class="cn">彰化縣營造業職業工會</div>
+        <div class="en">Changhua Construction Union of Occupational Labor</div>
       </div>
-    </section>
-
-    <div class="legal">
-      © <span id="year"></span> 彰化縣營造業職業工會．保留一切權利
     </div>
-  </footer>
+
+    <!-- 中：頁尾導覽（已移除「本會介紹」） -->
+    <nav class="uf-nav" aria-label="頁尾導覽">
+      <a href="#top">首頁</a><span aria-hidden="true">·</span>
+      <a href="#news">最新消息</a><span aria-hidden="true">·</span>
+      <a href="#downloads">下載專區</a><span aria-hidden="true">·</span>
+      <a href="tel:047233698">加入工會</a>
+    </nav>
+
+    <!-- 右：聯絡資訊 + 快捷鈕 -->
+    <address class="uf-contact">
+      <p>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 10c0 6-9 12-9 12S3 16 3 10a9 9 0 1 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        彰化市曉陽路262-1號4樓
+      </p>
+      <p>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.3 1.77.54 2.61a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.47-1.47a2 2 0 0 1 2.11-.45c.84.24 1.71.42 2.61.54A2 2 0 0 1 22 16.92Z"/></svg>
+        <a href="tel:047233698">04-723-3698</a>
+      </p>
+      <p>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        週一至週五 08:30–17:30
+      </p>
+
+      
+    </address>
+  </div>
+
+  <div class="uf-copy">
+    © <span id="year2"></span> 彰化縣營造業職業工會
+  </div>
+</footer>
+
 
   <button class="back-to-top" aria-label="返回頂部">↑</button>
 
@@ -216,7 +307,7 @@
     <h3 id="annTitle" class="modal-title">重要訊息提醒(測試中)</h3>
 
     <div id="annDesc" class="modal-content">
-      <!-- <ol class="ann-list">
+      <ol class="ann-list">
         <li>
           <strong>（一）選舉公告：</strong>
           本會《第13屆會員代表暨小組長選舉》，經本會第12屆第2次臨時理監事會議決通過，採取《登記制》。如要參選《會員代表》或《小組長》者，請向工會登記，登記後將印刷入選票。<br>
@@ -226,7 +317,7 @@
           <strong>（二）福利品兌領：</strong>
           民國114年度會員福利品兌領請至《當區連絡處》領取，切勿跨區領取。禮券已分送各連絡處；<strong>未兌領者</strong>於 <strong>114.10.20～114.11.20</strong> 始得前往工會兌領（依本會第12屆第2次臨時理監事會議決通過執行），<strong>逾期作廢</strong>，謝謝合作！
         </li>
-      </ol> -->
+      </ol>
     </div>
 
     <div class="modal-actions">
@@ -265,7 +356,7 @@
       "@type": "OpeningHoursSpecification",
       "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
       "opens": "08:30",
-      "closes": "17:00"
+      "closes": "17:30"
     }],
     "hasMap": "https://www.google.com/maps?q=彰化市曉陽路262-1號4樓"
   }

@@ -1,20 +1,20 @@
 // ======== 可編輯資料：最新消息 ========
 const NEWS = [
   {
-    id: "n-2025-08-maintain",
-    title: "測試中 系統維護公告（9/5 00:30–02:30）",
-    date: "2025-08-29",
-    body: "為提升服務品質，9/5(五) 凌晨將進行例行維護，期間部分服務暫停，敬請見諒。",
-    tags: ["公告", "維護"],
-    attachments: [{ label: "維護說明 PDF", href: "/downloads/維護說明_20250905.pdf", size: "0.7 MB" }]
+    id: "n-2025-09-election",
+    title: "第13屆會員代表暨小組長選舉公告（登記制）",
+    date: "2025-09-01",
+    body:
+      "公告：本會《第13屆會員代表暨小組長選舉》，經本會第12屆第2次臨時理監事會議決通過，採取《登記制》，如要參選《會員代表》或《小組長》者，請向工會登記，登記後將印刷入選票，截止登記至民國114年9月12日（星期五）15:00止，敬請留意！",
+    tags: ["公告", "選舉"]
   },
   {
-    id: "n-2025-07-product",
-    title: "測試中 新服務上線：線上申請表單（試營運）",
-    date: "2025-07-18",
-    body: "開放線上申請表單試營運，流程更便捷，歡迎多加利用。",
-    tags: ["業務", "服務更新"],
-    attachments: [{ label: "申請流程說明", href: "/downloads/申請流程_說明.pdf", size: "1.1 MB" }]
+    id: "n-2025-09-benefit",
+    title: "114年度會員福利品兌領注意事項",
+    date: "2025-09-01",
+    body:
+      "公告：民國114年度會員福利品兌領請至《當區連絡處》領取，切勿跨區領取，禮券已分送各連絡處，未兌領者114.10.20～114.11.20始得前往工會兌領（依本會第12屆第2次臨時理監事會議決通過執行），逾期作廢，謝謝合作！",
+    tags: ["公告", "福利"]
   }
 ];
 
@@ -22,7 +22,7 @@ const NEWS = [
 const DOWNLOADS = [
   { title: "測試中 說明", href: "/downloads/說明_2025.pdf", size: "1.2 MB", updated: "2025-08-15" },
   { title: "測試中 申請書範本", href: "/downloads/申請書_範本.pdf", size: "0.8 MB", updated: "2025-07-03" },
-  { title: "測試中 銀操作手冊", href: "/downloads/操作手冊.pdf", size: "2.0 MB", updated: "2025-06-10" }
+  { title: "測試中 操作手冊", href: "/downloads/操作手冊.pdf", size: "2.0 MB", updated: "2025-06-10" }
 ];
 
 // ======== 工具函式 ========
@@ -31,37 +31,29 @@ const $$ = (sel, el = document) => Array.from(el.querySelectorAll(sel));
 const fmtDate = (d) => new Intl.DateTimeFormat('zh-TW', { year:'numeric', month:'2-digit', day:'2-digit' }).format(new Date(d));
 const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
 
-// ======== 最新消息（列表）渲染：分類按鈕 + 搜尋 ========
+// ======== 最新消息（列表）渲染：單一膠囊 + 搜尋 ========
 (function renderNews(){
   const list = $('#newsList');
   const chipsWrap = $('#newsChips');
   const searchInput = $('#newsSearch');
 
   const sorted = [...NEWS].sort((a,b) => new Date(b.date) - new Date(a.date));
-  const allTags = Array.from(new Set(sorted.flatMap(x => x.tags || [])));
-  let activeTag = '全部';
   let keyword = '';
 
+  // 單一「本會公告」膠囊（僅標示，不可點）
   function buildChips(){
     chipsWrap.innerHTML = '';
-    const tags = ['全部', ...allTags];
-    for (const t of tags){
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'chip' + (t === activeTag ? ' active' : '');
-      btn.textContent = t;
-      btn.dataset.tag = t;
-      chipsWrap.appendChild(btn);
-    }
+    const pill = document.createElement('span');
+    pill.className = 'chip active';
+    pill.textContent = '本會公告';
+    chipsWrap.appendChild(pill);
   }
 
   function render(){
     list.innerHTML = '';
     const items = sorted.filter(item => {
-      const matchTag = activeTag === '全部' || (item.tags || []).includes(activeTag);
       const text = `${item.title} ${item.body} ${(item.tags||[]).join(' ')} ${item.date}`.toLowerCase();
-      const matchKey = !keyword || text.includes(keyword.toLowerCase());
-      return matchTag && matchKey;
+      return !keyword || text.includes(keyword.toLowerCase());
     });
 
     if(!items.length){
@@ -97,14 +89,11 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
     }
   }
 
-  chipsWrap.addEventListener('click', (e) => {
-    const t = e.target.closest('.chip'); if(!t) return;
-    activeTag = t.dataset.tag; buildChips(); render();
-  });
   searchInput.addEventListener('input', () => { keyword = searchInput.value.trim(); render(); });
 
   buildChips(); render();
 })();
+
 
 // ======== 下載專區渲染 ========
 (function renderDownloads(){
@@ -186,7 +175,11 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
 })();
 
 // 年份
-document.getElementById('year').textContent = new Date().getFullYear();
+(() => {
+  const y = new Date().getFullYear();
+  document.querySelectorAll('#year2').forEach(el => el && (el.textContent = y));
+})();
+
 
 /* === 新增：重要公告 Modal === */
 (function announcementModal(){
@@ -240,7 +233,7 @@ document.getElementById('year').textContent = new Date().getFullYear();
   // 初始顯示判斷
   const now = Date.now();
   const hideUntil = parseInt(localStorage.getItem(KEY) || '0', 10);
-  if (now <= DEADLINE_TS && now >= 0 && now >= 0 && now >= 0 && now >= 0) { // 小心保底
+  if (now <= DEADLINE_TS) { // 小心保底
     if (!(hideUntil && now < hideUntil)) {
       // 延遲一點點再顯示，避免跟首屏動畫搶畫面
       setTimeout(open, 120);
@@ -258,3 +251,11 @@ document.getElementById('year').textContent = new Date().getFullYear();
     close();
   });
 })();
+// Modal 顯示條件
+const now = Date.now();
+const hideUntil = parseInt(localStorage.getItem(KEY) || '0', 10);
+if (now <= DEADLINE_TS && !(hideUntil && now < hideUntil)) {
+  setTimeout(open, 120);
+}
+
+
