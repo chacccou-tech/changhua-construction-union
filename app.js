@@ -1,76 +1,24 @@
-/* 進入頁面（每次）都置頂，但網址保留 #y114 */
-// (() => {
-//   const HASH = '#y114';
-
-//   // 一律關閉瀏覽器的自動還原捲動
-//   try { history.scrollRestoration = 'manual'; } catch {}
-
-//   // 暫時移除錨點 id，避免載入時自動跳錨點
-//   const detach = () => {
-//     if (location.hash !== HASH) return;
-//     const id = HASH.slice(1);
-//     const el = document.getElementById(id);
-//     if (el && !el.hasAttribute('data-anchor-id')) {
-//       el.setAttribute('data-anchor-id', id);
-//       el.removeAttribute('id');
-//     }
-//   };
-
-//   // 置頂後再把 id 還原（讓之後的錨點行為正常）
-//   const restoreAndTop = () => {
-//     if (location.hash !== HASH) return;
-//     requestAnimationFrame(() => {
-//       window.scrollTo(0, 0);
-//       // 圖片/字型載入後可能撐高版面，再保險置頂一次
-//       setTimeout(() => {
-//         window.scrollTo(0, 0);
-//         const holder = document.querySelector('[data-anchor-id]');
-//         if (holder) {
-//           holder.id = holder.getAttribute('data-anchor-id');
-//           holder.removeAttribute('data-anchor-id');
-//         }
-//       }, 100);
-//     });
-//   };
-
-//   // 每次載入都執行（含重新整理）
-//   detach();
-//   document.addEventListener('DOMContentLoaded', restoreAndTop, { once: true });
-//   window.addEventListener('load', restoreAndTop, { once: true });
-
-//   // 從 bfcache 回來（行動版 Safari/Chrome 常見）
-//   window.addEventListener('pageshow', (e) => {
-//     if (e.persisted) { detach(); restoreAndTop(); }
-//   });
-// })();
-
-/* === 首次載入一律置頂（無錨點時）=== */
+/* === 回到頁首（每次載入 + 返回快取 bfcache）=== */
 (() => {
-  // 1) 關掉瀏覽器的自動捲動還原（Chrome/Android、iOS Safari 都會用到）
-  if ('scrollRestoration' in history) {
-    try { history.scrollRestoration = 'manual'; } catch {}
+  try { history.scrollRestoration = 'manual'; } catch {}
+
+  function forceTop(){
+    const html = document.documentElement;
+    const prev = html.style.scrollBehavior;
+    html.style.scrollBehavior = 'auto';
+    // 多次嘗試，涵蓋不同瀏覽器排版時序
+    window.scrollTo(0, 0);
+    requestAnimationFrame(() => window.scrollTo(0, 0));
+    setTimeout(() => { window.scrollTo(0, 0); html.style.scrollBehavior = prev; }, 120);
   }
 
-  // 有錨點就尊重錨點（例如 #news / #history）
-  const hasHash = !!location.hash && location.hash !== '#top';
-
-  // 用 pageshow 可同時涵蓋一般載入與 iOS Safari 特性
-  window.addEventListener('pageshow', (e) => {
-    // BFCache（返回上一頁）就不要動原本的位置
-    if (e.persisted) return;
-    if (hasHash) return;
-
-    // 置頂：多次嘗試可避免某些瀏覽器位移
-    requestAnimationFrame(() => window.scrollTo(0, 0));
-    setTimeout(() => window.scrollTo(0, 0), 50);
-    setTimeout(() => window.scrollTo(0, 0), 250);
-  }, { once: true });
+  document.addEventListener('DOMContentLoaded', forceTop, { once:true });
+  window.addEventListener('load',        forceTop, { once:true });
+  window.addEventListener('pageshow',    forceTop);  // 含 bfcache
 })();
 
-
-// ======== 可編輯資料：最新消息 ========
+/* ======== 可編輯資料：最新消息 ======== */
 const NEWS = [
-  
   {
     id: "n-2025-09-election",
     title: "第13屆會員代表暨小組長選舉公告（登記制）",
@@ -87,37 +35,36 @@ const NEWS = [
       "公告：民國114年度會員福利品兌領請至《當區連絡處》領取，切勿跨區領取，禮券已分送各連絡處，未兌領者114.10.20～114.11.20始得前往工會兌領（依本會第12屆第2次臨時理監事會議決通過執行），逾期作廢，謝謝合作！",
     tags: ["公告", "福利"]
   },
-{
-  id: "n-2025-09-join-notes",
-  title: "入會完成 注意事項",
-  date: "2025-09-01",
-  tags: ["公告"],
-  body: `
-    <ol>
-      <li><strong>退保退會：</strong>入會加保後，若日後公司/工廠另行為您加保勞健保，工會這邊不會在未經會員授權下主動辦理退保退會。請本人（或家屬代辦）攜帶<strong>會員證、印章</strong>到會辦理退會退保。</li>
-      <li><strong>繳費方式：</strong>工會徵繳期間會寄發繳費單。期限內可至 <strong>7-11、全家、彰化第五信用合作社、郵局、本會臨櫃</strong>繳納；<u>逾期</u>則<strong>超商與五信不受理</strong>，請留意。</li>
-      <li><strong>會員證：</strong>
-        <ol>
-          <li>退會時需繳回，切勿遺失。</li>
-          <li>背面列有本會會館<strong>地址、電話、傳真</strong>，可供查詢。</li>
-          <li>不慎毀損：請儘量帶回<strong>護貝外皮</strong>、並附<strong>大頭照1張</strong>至本會申請補發。</li>
-          <li><strong>就醫優惠（限當下出示，本會不受理事後補證退費）：</strong>持本證可至
-            《彰市》彰基總院區、彰基兒童醫院、漢銘基督教、秀傳、祥順中醫診所；
-            《員林市》員基；《鹿港》鹿基、鹿基長青院區、彰濱秀傳；
-            《二林》二基 等院所享優惠就診。
-          </li>
-        </ol>
-      </li>
-      <li><strong>投保薪資調整：</strong>入會滿 1 年後若有調薪需求，請詳閱每期繳費通知公文內文。</li>
-      <li><strong>互助金給付：</strong>（1）配偶/父母/子女（滿20歲）喪葬奠儀。（2）會員住院5日以上慰問金（每年度限一次）。（3）會員結婚賀儀。（4）會員退休慰問金（依年資）。</li>
-      <li><strong>意外團保：</strong>本會與保險公司合作提供<strong>自願性</strong>《會員及眷屬意外團保》，每人每月 100 元，採年繳。有意願者請洽本會專員。</li>
-    </ol>
-  `
-}
-
+  {
+    id: "n-2025-09-join-notes",
+    title: "入會完成 注意事項",
+    date: "2025-09-01",
+    tags: ["公告"],
+    body: `
+      <ol>
+        <li><strong>退保退會：</strong>入會加保後，若日後公司/工廠另行為您加保勞健保，工會這邊不會在未經會員授權下主動辦理退保退會。請本人（或家屬代辦）攜帶<strong>會員證、印章</strong>到會辦理退會退保。</li>
+        <li><strong>繳費方式：</strong>工會徵繳期間會寄發繳費單。期限內可至 <strong>7-11、全家、彰化第五信用合作社、郵局、本會臨櫃</strong>繳納；<u>逾期</u>則<strong>超商與五信不受理</strong>，請留意。</li>
+        <li><strong>會員證：</strong>
+          <ol>
+            <li>退會時需繳回，切勿遺失。</li>
+            <li>背面列有本會會館<strong>地址、電話、傳真</strong>，可供查詢。</li>
+            <li>不慎毀損：請儘量帶回<strong>護貝外皮</strong>、並附<strong>大頭照1張</strong>至本會申請補發。</li>
+            <li><strong>就醫優惠（限當下出示，不受理事後補證退費）：</strong>持本證可至
+              《彰市》彰基總院區、彰基兒童醫院、漢銘基督教、秀傳、祥順中醫診所；
+              《員林市》員基；《鹿港》鹿基、鹿基長青院區、彰濱秀傳；
+              《二林》二基 等院所享優惠就診。
+            </li>
+          </ol>
+        </li>
+        <li><strong>投保薪資調整：</strong>入會滿 1 年後若有調薪需求，請詳閱每期繳費通知公文內文。</li>
+        <li><strong>互助金給付：</strong>（1）配偶/父母/子女（滿20歲）喪葬奠儀。（2）會員住院5日以上慰問金（每年度限一次）。（3）會員結婚賀儀。（4）會員退休慰問金（依年資）。</li>
+        <li><strong>意外團保：</strong>本會提供<strong>自願性</strong>《會員及眷屬意外團保》，每人每月 100 元，採年繳。有意願者請洽本會專員。</li>
+      </ol>
+    `
+  }
 ];
 
-// ======== 可編輯資料：下載清單（PDF） ========
+/* ======== 可編輯資料：下載清單（PDF） ======== */
 const DOWNLOADS = [
   {
     title: "辦理入會加保需知（第5版，114.09.12）",
@@ -133,15 +80,13 @@ const DOWNLOADS = [
   }
 ];
 
-
-
-// ======== 工具函式 ========
+/* ======== 工具函式 ======== */
 const $ = (sel, el = document) => el.querySelector(sel);
 const $$ = (sel, el = document) => Array.from(el.querySelectorAll(sel));
 const fmtDate = (d) => new Intl.DateTimeFormat('zh-TW', { year:'numeric', month:'2-digit', day:'2-digit' }).format(new Date(d));
 const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
 
-// ======== 最新消息（列表）渲染：單一膠囊 + 搜尋 ========
+/* ======== 最新消息（列表）渲染：單一膠囊 + 搜尋 ======== */
 (function renderNews(){
   const list = $('#newsList');
   const chipsWrap = $('#newsChips');
@@ -150,7 +95,6 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
   const sorted = [...NEWS].sort((a,b) => new Date(b.date) - new Date(a.date));
   let keyword = '';
 
-  // 單一「本會公告」膠囊（僅標示，不可點）
   function buildChips(){
     chipsWrap.innerHTML = '';
     const pill = document.createElement('span');
@@ -204,7 +148,7 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
   buildChips(); render();
 })();
 
-// ======== 下載專區渲染 ========
+/* ======== 下載專區渲染 ======== */
 (function renderDownloads(){
   const grid = $('#dlGrid');
   const searchInput = $('#dlSearch');
@@ -244,7 +188,7 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
   render();
 })();
 
-// ======== 一頁式導覽高亮 & 手機選單 & 回頂部 ========
+/* ======== 一頁式導覽高亮 & 手機選單 & 回頂部 ======== */
 (function navEnhance(){
   const links = $$('.nav-links a[href^="#"]');
   const sections = links
@@ -277,23 +221,10 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
     if(e.target.matches('a[href^="#"]')) closeMenu();
   });
 
-  // 特例：點到 #downloads 時，導到 #history（你的需求）
-  document.addEventListener('click', (e) => {
-    const a = e.target.closest('a[href="#downloads"]');
-    if(!a) return;
-    e.preventDefault();
-    document.querySelector('#history')?.scrollIntoView({ behavior: 'smooth' });
-  });
-
-  // 返回頂部按鈕
-  const btn = document.querySelector('.back-to-top');
-  window.addEventListener('scroll', () => {
-    btn?.classList.toggle('show', window.scrollY > 480);
-  });
-  btn?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  // （已移除）把 #downloads 轉導到 #history 的舊需求
 })();
 
-// 年份（頁尾）
+/* ======== 年份（頁尾） ======== */
 (() => {
   const y = new Date().getFullYear();
   document.querySelectorAll('#year2').forEach(el => el && (el.textContent = y));
@@ -301,13 +232,12 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
 
 /* === 重要公告 Modal（修正作用域：不外漏變數） === */
 (function announcementModal(){
-  // 截止時間：選舉（2025-09-12 15:00 +08）與福利品（到 2025-11-20 23:59:59 +08）
   const DEADLINE_TS = new Date('2025-11-20T23:59:59+08:00').getTime();
   const KEY = 'union-ann-hide-until-v1';
 
   const backdrop = document.getElementById('annBackdrop');
   const modal = document.getElementById('annModal');
-  if(!backdrop || !modal) return; // 沒有 modal 就不執行
+  if(!backdrop || !modal) return;
 
   const closeBtn = document.getElementById('annClose');
   const confirmBtn = document.getElementById('annConfirm');
@@ -347,14 +277,12 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
     document.addEventListener('keydown', focusHandler);
   }
 
-  // 初始顯示判斷（全部留在 IIFE 裡）
   const now = Date.now();
   const hideUntil = parseInt(localStorage.getItem(KEY) || '0', 10);
   if (now <= DEADLINE_TS && !(hideUntil && now < hideUntil)) {
     setTimeout(open, 120);
   }
 
-  // 事件
   backdrop.addEventListener('click', close);
   closeBtn?.addEventListener('click', close);
   laterBtn?.addEventListener('click', close);
@@ -366,49 +294,39 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
   });
 })();
 
-/* === 歷年重要記事：資料（節錄自你提供的 docx） === */
 /* === 歷年重要記事資料（依你提供內容整理） === */
 const ANNALS = [
   { year: 114, items: [
     { date: "4月1日", text: "本會向勞保局陳情本會職災費率調整修正在案，依勞保局114.04.29.保納新字第11460094550號函同意施行通過，自114.04.01.起，本會職災費率由現行0.57％調整為0.37％，低差0.2％。" }
   ]},
-
   { year: 112, items: [
     { date: "3月2日", text: "本會為方便會員繳納會保費，經第12屆第6次理監事會議決通過執行，會員繳費除原先郵局及本會臨櫃外，另擴增可至7-11超商、全家超商及彰化五信繳納。" }
   ]},
-
   { year: 107, items: [
     { date: "6月1日", text: "本會開辦興華保險經紀公司《會員意外團保險》。" }
   ]},
-
   { year: 103, items: [
     { date: "8月25日", text: "本會與嘉義縣、雲林縣、澎湖縣四縣市營造工會締盟姊妹會。" }
   ]},
-
   { year: 102, items: [
     { date: "5月1日", text: "本會於假台北參加「全國勞工抗議勞、健保不當改革，捍衛權益遊行」，計動員118名（3台車）參加。" }
   ]},
-
   { year: 100, items: [
     { date: "5月1日", text: "工會法新修定：自100.05.01起基層工會改為理事長制，任期為4年。" }
   ]},
-
   { year: 97, items: [
     { date: "5月21日", text: "協助大陸四川汶川地震賑災，本會捐款彰化縣總工會帳戶新台幣萬元。" }
   ]},
-
   { year: 90, items: [
     { date: "1月16日", text: "本會參加中華民國營造業職業工會全國聯合總會成立大會。" },
     { date: "7月2日", text: "本會與木工工會、泥水工會、模板工會、鐵工工會、水電工會、室內裝潢工會、油漆工會續辦彰化縣建築業聯誼會。" }
   ]},
-
   { year: 89, items: [
     { date: "3月9日", text: "本會接受省聯合會「補助九二一地震受災會員，重建家園活動」，計核符36戶(每名2,200元)，總計補助金額新台幣79,200元，並全數寄發合格震災戶。" },
     { date: "3月12日", text: "本會榮獲彰化縣政府評鑑為89年推行勞工安全衛生自動檢查優良單位。" },
     { date: "4月24日", text: "本會經健保局評鑑為89年健保優良工會。" },
     { date: "5月30日", text: "本會與嘉義縣營造工會締盟姊妹會，並與澎湖縣營造工會三會共同結盟姊妹會。" }
   ]},
-
   { year: 88, items: [
     { date: "2月2日", text: "本會與澎湖縣營造工會締盟姊妹會。" },
     { date: "5月5日", text: "本會經行政院勞委會指定為88年度優良會務報告及示範單位，並接受各縣市及各聯合會理事長、總幹事的來會參訪及高度肯定。" },
@@ -417,14 +335,12 @@ const ANNALS = [
     { date: "11月9日", text: "協助九二一地震賑災，本會捐款聯合會帳戶新台幣20萬元。" },
     { date: "12月3日", text: "辦理九二一震災互助，協助會員受災戶重建家園，本會受理全倒房屋23件(每名2萬元)、半倒房屋16件(每名1萬元)及領有受災戶健保卡之會員及眷屬(每名500元)81人，連同急難救助互助金寄發申請合格人，全年度總核發946,120元。" }
   ]},
-
   { year: 82, items: [
     { date: "4月1日",  text: "本會會員粘錦成代表我參加第32屆國際技能競賽，榮獲世界金牌獎。" },
     { date: "4月22日", text: "召開第3屆第8次理監事會，研討慶祝會館新落成暨成立8週年實施辦法。" },
     { date: "4月22日", text: "本會與泥水工會、木工工會、鐵工工會、水電工會共同發起彰化縣建築業工會幹部聯誼會（民國86年後停辦）。" },
     { date: "5月1日",  text: "本會榮獲勞委會評鑑為82年全國優良工會。" }
   ]},
-
   { year: 81, items: [
     { date: "2月20日", text: "召開第3屆第1次臨時理監事會，決定遷移會址。" },
     { date: "3月1日",  text: "正式遷移會所至彰化市民生路447號10樓辦公。" },
@@ -436,7 +352,6 @@ const ANNALS = [
     { date: "9月8日",  text: "假彰化市富貴園餐廳召開第3屆第2次會員代表大會，通過會員福利互助辦法、重陽敬老由75歲修改為70歲，及追認購置會所經費案。" },
     { date: "10月5日", text: "本會榮獲行政院勞委會評鑑為81年度全國推行勞工教育優良工會。" }
   ]},
-
   { year: 80, items: [
     { date: "2月1日",  text: "起廢除派員赴各區民眾服務站辦理入會案。" },
     { date: "4月25日", text: "省聯合會80年度模範勞工90人蒞會拜訪，本會招待參觀鹿港古蹟及午餐。" },
@@ -446,17 +361,14 @@ const ANNALS = [
     { date: "11月2日", text: "召開第3屆第2次理監事會，通過購置曉陽名邸作為本會會館。" },
     { date: "12月26日",text: "辦理本會首期安全衛生講習會，計有100名參加。" }
   ]},
-
   { year: 79, items: [
     { date: "1月20日", text: "本會陳杰常理，經全體會員積極助選，榮獲彰化區最高票當選彰化縣議員。" },
     { date: "9月18日", text: "假彰化市富貴園餐廳召開第2屆第3次會員代表大會，通過訂定「聯絡處設置管理辦法」。" }
   ]},
-
   { year: 78, items: [
     { date: "8月19日", text: "本會榮獲省聯合會77年度特優工會獎牌。" },
     { date: "12月29日", text: "召開第2屆第8次理監事會，通過支持陳杰常理競選彰化縣議員。" }
   ]},
-
   { year: 77, items: [
     { date: "2月6日",  text: "召開第1屆第11次理監事會暨連絡處主任聯席會，通過本會會旗圖樣，及會員代表暨小組長選舉辦法。" },
     { date: "8月11日", text: "本會榮獲省聯合會77年度優等單位獎。" },
@@ -465,20 +377,17 @@ const ANNALS = [
     { date: "10月1日", text: "起每月定期派員駐二林、溪湖、田中、北斗、員林各鄉鎮民眾服務社，辦理會員入會。" },
     { date: "10月1日", text: "本會成立彰化營造工會就業服務中心，聯合全省辦理就業輔導工作。" }
   ]},
-
   { year: 76, items: [
     { date: "5月1日",  text: "本會經縣政府評定為優良工會。" },
     { date: "8月13日", text: "省聯合會召開第2屆第2次會員代表大會，本會榮獲省聯合會頒發特優單位獎牌。" },
     { date: "9月2日",  text: "假縣政府大禮堂召開第1屆第3次會員代表大會，通過設立急難救助辦法及重陽敬老辦法。" },
     { date: "9月30日", text: "召開第1屆第10次理監事會，通過樂捐225,000元作為省聯合會會館基金。" }
   ]},
-
   { year: 75, items: [
     { date: "1月28日", text: "召開第1屆第3次理監事會及小組長聯席會，通過擬定會員代表暨小組長選舉辦法。" },
     { date: "6月13日", text: "召開第1屆第4次理監事會，通過前往各地宣導，勸導從事營造業無一定雇主勞工入會。" },
     { date: "8月15日", text: "召開第1屆第2次會員大會，會員有932名，大會修改章程將入會費由100元調300元，大會改開會員代表大會，並通過設立子女獎學金及表揚熱心幹部。" }
   ]},
-
   { year: 74, items: [
     { date: "4月15日", text: "在員林鎮祝樂餐廳成立大會，會員有101名，大會通過預算、工作計劃章程及投保勞工保險並選舉首屆理監事。" },
     { date: "4月19日", text: "召開第1次理監事會，選舉林源豐為常理、游秋軒為常監，通過會址設於彰化市，並聘請吳鴻祺為秘書，吳國印、蔡寶美為幹事。" },
@@ -490,7 +399,6 @@ const ANNALS = [
   ]}
 ];
 
-
 /* === 歷年重要記事：經典可讀版（年份索引與圖片等高；手機為橫向膠囊） === */
 (function renderAnnalsClassic(){
   const host = document.getElementById('annalsList');
@@ -499,13 +407,16 @@ const ANNALS = [
   const YEARS = Array.isArray(ANNALS) ? [...ANNALS].sort((a,b)=> b.year - a.year) : [];
   if (!YEARS.length){ host.innerHTML = `<div class="card">尚無資料。</div>`; return; }
 
+  // 只有使用者互動或原本就帶 #y… 的深連結時，才更新網址
+  let allowHashUpdate = location.hash.startsWith('#y');
+
   const isMobile = () => window.matchMedia('(max-width: 900px)').matches;
   const getHashYear = () => {
     const m = location.hash.match(/^#y(\d{2,3})$/); return m ? +m[1] : null;
   };
   let currentYear = getHashYear() || YEARS[0].year;
 
-  // 骨架（中：年份索引；右：事件面板）
+  // 骨架
   host.innerHTML = `
     <div class="annals-3col">
       <aside class="year-rail" id="yearRail" aria-label="年份索引">
@@ -552,7 +463,7 @@ const ANNALS = [
     updateRailHeight();
   }
 
-  // 建立年份索引（含十年分隔）
+  // 年份索引
   let lastDecade = null;
   railBody.innerHTML = YEARS.map(y=>{
     const decade = Math.floor(y.year / 10) * 10;
@@ -567,12 +478,12 @@ const ANNALS = [
     `;
   }).join('');
 
-  // 行動版：橫向膠囊
+  // 行動版膠囊
   chipRow.innerHTML = YEARS.map(y=>`
     <button class="chip ${y.year===currentYear?'active':''}" data-year="${y.year}">民國${y.year}</button>
   `).join('');
 
-  // 渲染某一年的事件
+  // 渲染某一年
   function renderYear(yr){
     const y = YEARS.find(v=>v.year===yr) || YEARS[0];
     currentYear = y.year;
@@ -599,7 +510,7 @@ const ANNALS = [
     };
     draw();
 
-    // 更新索引高亮 & 捲到可視範圍
+    // 索引高亮
     railBody.querySelectorAll('.y-item').forEach(b=>{
       const on = +b.dataset.year === y.year;
       b.classList.toggle('active', on);
@@ -611,19 +522,20 @@ const ANNALS = [
       if (c.classList.contains('active') && isMobile()) c.scrollIntoView({ inline:'center', block:'nearest' });
     });
 
-    - history.replaceState(null, '', `#y${y.year}`);
-+ if (allowHashUpdate) {
-+   history.replaceState(null, '', `#y${y.year}`);
-+ }
+    if (allowHashUpdate) {
+      history.replaceState(null, '', `#y${y.year}`);
+    }
   }
 
   // 事件：點年份（索引／膠囊）
   railBody.addEventListener('click', (e)=>{
     const btn = e.target.closest('.y-item'); if(!btn) return;
+    allowHashUpdate = true;
     renderYear(+btn.dataset.year);
   });
   chipRow.addEventListener('click', (e)=>{
     const btn = e.target.closest('.chip'); if(!btn) return;
+    allowHashUpdate = true;
     renderYear(+btn.dataset.year);
   });
 
@@ -645,13 +557,11 @@ const ANNALS = [
   renderYear(currentYear);
 })();
 
-
 /* === Hero 輕量進場（圖片解碼完成再顯示） === */
 (() => {
   const hero = document.getElementById('hero');
   if (!hero) return;
 
-  // 把要淡入的元素標記（標題/說明/按鈕）
   hero.querySelector('.hero-title')?.setAttribute('data-reveal','');
   hero.querySelector('.hero-sub')?.setAttribute('data-reveal','');
   hero.querySelectorAll('.hero-actions .btn')?.forEach(b => b.setAttribute('data-reveal',''));
@@ -660,14 +570,12 @@ const ANNALS = [
   const reveal = () => hero.classList.add('reveal');
 
   if (img?.complete) {
-    // 圖片可能已快取好，直接 reveal
     requestAnimationFrame(reveal);
   } else {
-    img?.addEventListener('load', () => requestAnimationFrame(reveal), { once:true });
+    img?.addEventListener('load',  () => requestAnimationFrame(reveal), { once:true });
     img?.addEventListener('error', () => requestAnimationFrame(reveal), { once:true });
   }
 
-  // 從 bfcache 回來時維持已顯示
   window.addEventListener('pageshow', (e) => {
     if (e.persisted) requestAnimationFrame(reveal);
   });
