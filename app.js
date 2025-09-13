@@ -630,3 +630,10 @@ const ANNALS = [
     if (e.persisted) requestAnimationFrame(reveal);
   });
 })();
+/* 保險：確保不會殘留 .modal-open 造成不能捲動（LINE/Android 偶發） */
+(() => {
+  const unlock = () => document.body.classList.remove('modal-open');
+  window.addEventListener('pageshow', unlock);   // 含 bfcache 回來
+  window.addEventListener('focus', unlock);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) unlock(); });
+})();
