@@ -732,3 +732,94 @@ html, body { overflow-x: hidden; }
   .ann-chip-row{ display:flex; overflow:auto; gap:8px; padding:4px 0; scroll-snap-type:x mandatory }
   .ann-chip-row .chip{ flex:0 0 auto; scroll-snap-align:center }
 }
+
+
+
+
+
+/* === Hero v3：滿版 + 側向漸暗 + 波浪分隔 === */
+.hero{
+  --hero-h: clamp(360px, 56vh, 640px);
+  --wave-h: 72px;              /* 波浪高度，可調 56~96px */
+  --hero-crop-y: 38%;          /* 構圖焦點（0%=頂，50%=中，100%=底） */
+  position: relative;
+  padding-bottom: var(--wave-h);
+  border-bottom: none;
+}
+
+/* 打破容器，真正滿版 */
+.hero-media{
+  position: relative;
+  max-width: none; padding: 0; width: 100vw; height: var(--hero-h);
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
+.hero-media picture, .hero-media img{ display:block; width:100%; height:100%; }
+.hero-media img{
+  object-fit: cover;
+  object-position: 50% var(--hero-crop-y);
+  border: 0; border-radius: 0; box-shadow: none;
+}
+
+/* 上方暗層（讓文字更清楚） */
+.hero-scrim{
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(6,18,46,.55), rgba(6,18,46,.22) 36%, rgba(6,18,46,.08) 65%, transparent 100%);
+}
+
+/* 左右側向漸暗，修掉「滿版邊緣太突兀」的問題 */
+.hero-vignette{
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(60% 70% at 0% 50%, rgba(0,0,0,.32), transparent 60%),
+    radial-gradient(60% 70% at 100% 50%, rgba(0,0,0,.32), transparent 60%);
+  mix-blend-mode: multiply;    /* 讓暗角更自然 */
+}
+
+/* 文字群組：左下對齊在主容器寬度內 */
+.hero-inner{
+  position: absolute; inset: 0;
+  max-width: 1100px; margin: 0 auto; padding: 0 20px 28px;
+  display: grid; align-content: end; justify-items: start; gap: 10px;
+}
+.hero-chip{
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 10px; border-radius: 999px;
+  background: rgba(255,255,255,.88); color: #123a92; font-weight: 800; font-size: 12px;
+  border: 1px solid var(--border); letter-spacing: .04em;
+}
+.hero-title{
+  margin: 0; color: #fff; font-weight: 900;
+  font-size: clamp(28px, 5.6vw, 44px);
+  letter-spacing: .4px; text-shadow: 0 2px 12px rgba(0,0,0,.28);
+}
+.hero-sub{
+  margin: 0; color: #e7efff; font-size: clamp(14px, 2.7vw, 18px);
+  text-shadow: 0 1px 8px rgba(0,0,0,.24);
+}
+
+/* 底部波浪分隔，填入頁面背景色 */
+.hero-wave{
+  position: absolute; left: 0; right: 0; bottom: 0;
+  width: 100%; height: var(--wave-h);
+  display: block;
+}
+.hero-wave path{ fill: var(--bg); }
+
+/* 取消舊按鈕 */
+.hero-actions{ display: none !important; }
+
+/* 無障礙：偏好減少動畫時停用任何動畫 */
+@media (prefers-reduced-motion: reduce){
+  .hero *{ transition: none !important; animation: none !important; }
+}
+
+/* 簡單的品牌色光暈（氣氛用） */
+.hero::before{
+  content:"";
+  position:absolute; inset:0; pointer-events:none;
+  background:
+    radial-gradient(800px 260px at 12% -8%, rgba(43,142,230,.12), transparent 60%),
+    radial-gradient(800px 260px at 110% -8%, rgba(22,163,74,.12), transparent 60%);
+}

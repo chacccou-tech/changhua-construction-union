@@ -70,10 +70,11 @@
 
 // ======== 可編輯資料：最新消息 ========
 const NEWS = [
+  
   {
     id: "n-2025-09-election",
     title: "第13屆會員代表暨小組長選舉公告（登記制）",
-    date: "2025-09-01",
+    date: "2025-09-06",
     body:
       "公告：本會《第13屆會員代表暨小組長選舉》，經本會第12屆第2次臨時理監事會議決通過，採取《登記制》，如要參選《會員代表》或《小組長》者，請向工會登記，登記後將印刷入選票，截止登記至民國114年9月12日（星期五）15:00止，敬請留意！",
     tags: ["公告", "選舉"]
@@ -81,19 +82,57 @@ const NEWS = [
   {
     id: "n-2025-09-benefit",
     title: "114年度會員福利品兌領注意事項",
-    date: "2025-09-01",
+    date: "2025-09-05",
     body:
       "公告：民國114年度會員福利品兌領請至《當區連絡處》領取，切勿跨區領取，禮券已分送各連絡處，未兌領者114.10.20～114.11.20始得前往工會兌領（依本會第12屆第2次臨時理監事會議決通過執行），逾期作廢，謝謝合作！",
     tags: ["公告", "福利"]
-  }
+  },
+{
+  id: "n-2025-09-join-notes",
+  title: "入會完成 注意事項",
+  date: "2025-09-01",
+  tags: ["公告"],
+  body: `
+    <ol>
+      <li><strong>退保退會：</strong>入會加保後，若日後公司/工廠另行為您加保勞健保，工會這邊不會在未經會員授權下主動辦理退保退會。請本人（或家屬代辦）攜帶<strong>會員證、印章</strong>到會辦理退會退保。</li>
+      <li><strong>繳費方式：</strong>工會徵繳期間會寄發繳費單。期限內可至 <strong>7-11、全家、彰化第五信用合作社、郵局、本會臨櫃</strong>繳納；<u>逾期</u>則<strong>超商與五信不受理</strong>，請留意。</li>
+      <li><strong>會員證：</strong>
+        <ol>
+          <li>退會時需繳回，切勿遺失。</li>
+          <li>背面列有本會會館<strong>地址、電話、傳真</strong>，可供查詢。</li>
+          <li>不慎毀損：請儘量帶回<strong>護貝外皮</strong>、並附<strong>大頭照1張</strong>至本會申請補發。</li>
+          <li><strong>就醫優惠（限當下出示，本會不受理事後補證退費）：</strong>持本證可至
+            《彰市》彰基總院區、彰基兒童醫院、漢銘基督教、秀傳、祥順中醫診所；
+            《員林市》員基；《鹿港》鹿基、鹿基長青院區、彰濱秀傳；
+            《二林》二基 等院所享優惠就診。
+          </li>
+        </ol>
+      </li>
+      <li><strong>投保薪資調整：</strong>入會滿 1 年後若有調薪需求，請詳閱每期繳費通知公文內文。</li>
+      <li><strong>互助金給付：</strong>（1）配偶/父母/子女（滿20歲）喪葬奠儀。（2）會員住院5日以上慰問金（每年度限一次）。（3）會員結婚賀儀。（4）會員退休慰問金（依年資）。</li>
+      <li><strong>意外團保：</strong>本會與保險公司合作提供<strong>自願性</strong>《會員及眷屬意外團保》，每人每月 100 元，採年繳。有意願者請洽本會專員。</li>
+    </ol>
+  `
+}
+
 ];
 
 // ======== 可編輯資料：下載清單（PDF） ========
 const DOWNLOADS = [
-  { title: "測試中 說明", href: "/downloads/說明_2025.pdf", size: "1.2 MB", updated: "2025-08-15" },
-  { title: "測試中 申請書範本", href: "/downloads/申請書_範本.pdf", size: "0.8 MB", updated: "2025-07-03" },
-  { title: "測試中 操作手冊", href: "/downloads/操作手冊.pdf", size: "2.0 MB", updated: "2025-06-10" }
+  {
+    title: "辦理入會加保需知（第5版，114.09.12）",
+    href: "./downloads/《入會》辦理入會加保需知(第5版，114.09.12.).docx",
+    size: "DOCX",
+    updated: "2025-09-12"
+  },
+  {
+    title: "會員勞健保調整薪資申請書",
+    href: "./downloads/會員勞健保調整薪資申請書.docx",
+    size: "DOCX",
+    updated: "2025-09-01"
+  }
 ];
+
 
 // ======== 工具函式 ========
 const $ = (sel, el = document) => el.querySelector(sel);
@@ -603,3 +642,29 @@ const ANNALS = [
 })();
 
 
+/* === Hero 輕量進場（圖片解碼完成再顯示） === */
+(() => {
+  const hero = document.getElementById('hero');
+  if (!hero) return;
+
+  // 把要淡入的元素標記（標題/說明/按鈕）
+  hero.querySelector('.hero-title')?.setAttribute('data-reveal','');
+  hero.querySelector('.hero-sub')?.setAttribute('data-reveal','');
+  hero.querySelectorAll('.hero-actions .btn')?.forEach(b => b.setAttribute('data-reveal',''));
+
+  const img = hero.querySelector('img');
+  const reveal = () => hero.classList.add('reveal');
+
+  if (img?.complete) {
+    // 圖片可能已快取好，直接 reveal
+    requestAnimationFrame(reveal);
+  } else {
+    img?.addEventListener('load', () => requestAnimationFrame(reveal), { once:true });
+    img?.addEventListener('error', () => requestAnimationFrame(reveal), { once:true });
+  }
+
+  // 從 bfcache 回來時維持已顯示
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) requestAnimationFrame(reveal);
+  });
+})();
