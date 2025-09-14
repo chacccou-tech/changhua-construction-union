@@ -1,15 +1,23 @@
-/* ==== 進站一律置頂（與公告是否顯示無關）==== */
+/* ==== 首次載入：預設置頂，但若使用者曾勾「不要再顯示」公告，則不強制置頂 ==== */
 (function forceTopOnFirstLoad(){
   // 停用瀏覽器自動還原卷動位置
   if ('scrollRestoration' in history) {
     try { history.scrollRestoration = 'manual'; } catch {}
   }
 
-  // 有錨點就尊重錨點（例如 #news / #history），否則強制回頂
+  // 若網址本身帶錨點（例如 #news / #history），則尊重錨點，不強制回頂
   const respectHash = !!location.hash && location.hash !== '#top';
 
+  // 若使用者曾在公告勾選「不要再顯示」，則下次進站不強制置頂
+  let skipForceTop = false;
+  try {
+    const ANN_KEY = 'union-ann-hide-until-v1';
+    const hideUntil = parseInt(localStorage.getItem(ANN_KEY) || '0', 10);
+    if (hideUntil && Date.now() < hideUntil) skipForceTop = true;
+  } catch {}
+
   function toTopHard(){
-    if (respectHash) return;
+    if (respectHash || skipForceTop) return;
 
     const html = document.documentElement;
     const prev = html.style.scrollBehavior;
@@ -19,7 +27,6 @@
       window.scrollTo(0, 0);
       document.body.scrollTop = 0;            // iOS 備援
       document.documentElement.scrollTop = 0; // 另一備援
-      // 若有 Hero，就再保險讓它對齊頂端
       document.getElementById('hero')?.scrollIntoView({ block: 'start', behavior: 'auto' });
     };
 
@@ -30,7 +37,7 @@
     });
   }
 
-  // 初次進站（非 bfcache）就置頂
+  // 初次進站（非 bfcache）就置頂（若未被 skipForceTop/錨點排除）
   window.addEventListener('pageshow', (e) => { if (!e.persisted) toTopHard(); }, { once: true });
   // 仍加一個載入保險
   window.addEventListener('load', toTopHard, { once: true });
@@ -56,47 +63,20 @@ const NEWS = [
     body:
       "公告：民國114年度會員福利品兌領請至《當區連絡處》領取，切勿跨區領取，禮券已分送各連絡處，未兌領者114.10.20～114.11.20始得前往工會兌領（依本會第12屆第2次臨時理監事會議決通過執行），逾期作廢，謝謝合作！",
     tags: ["公告", "福利"]
-  },
-  {
-    id: "n-2025-09-join-notes",
-    title: "入會完成 注意事項",
-    date: "2025-09-01",
-    tags: ["公告"],
-    body: `
-      <ol>
-        <li><strong>退保退會：</strong>入會加保後，若日後公司/工廠另行為您加保勞健保，工會這邊不會在未經會員授權下主動辦理退保退會。請本人（或家屬代辦）攜帶<strong>會員證、印章</strong>到會辦理退會退保。</li>
-        <li><strong>繳費方式：</strong>工會徵繳期間會寄發繳費單。期限內可至 <strong>7-11、全家、彰化第五信用合作社、郵局、本會臨櫃</strong>繳納；<u>逾期</u>則<strong>超商與五信不受理</strong>，請留意。</li>
-        <li><strong>會員證：</strong>
-          <ol>
-            <li>退會時需繳回，切勿遺失。</li>
-            <li>背面列有本會會館<strong>地址、電話、傳真</strong>，可供查詢。</li>
-            <li>不慎毀損：請儘量帶回<strong>護貝外皮</strong>、並附<strong>大頭照1張</strong>至本會申請補發。</li>
-            <li><strong>就醫優惠（限當下出示，不受理事後補證退費）：</strong>持本證可至
-              《彰市》彰基總院區、彰基兒童醫院、漢銘基督教、秀傳、祥順中醫診所；
-              《員林市》員基；《鹿港》鹿基、鹿基長青院區、彰濱秀傳；
-              《二林》二基 等院所享優惠就診。
-            </li>
-          </ol>
-        </li>
-        <li><strong>投保薪資調整：</strong>入會滿 1 年後若有調薪需求，請詳閱每期繳費通知公文內文。</li>
-        <li><strong>互助金給付：</strong>（1）配偶/父母/子女（滿20歲）喪葬奠儀。（2）會員住院5日以上慰問金（每年度限一次）。（3）會員結婚賀儀。（4）會員退休慰問金（依年資）。</li>
-        <li><strong>意外團保：</strong>本會提供<strong>自願性</strong>《會員及眷屬意外團保》，每人每月 100 元，採年繳。有意願者請洽本會專員。</li>
-      </ol>
-    `
   }
 ];
 
-/* ======== 可編輯資料：下載清單（PDF） ======== */
+/* ======== 可編輯資料：下載清單（PDF，路徑改到 ./pdf/） ======== */
 const DOWNLOADS = [
   {
     title: "辦理入會加保需知（第5版，114.09.12）",
-    href: "./downloads/《入會》辦理入會加保需知(第5版，114.09.12.).pdf",
+    href: "./pdf/《入會》辦理入會加保需知(第5版，114.09.12.).pdf",
     size: "PDF",
     updated: "2025-09-12"
   },
   {
     title: "會員勞健保調整薪資申請書",
-    href: "./downloads/會員勞健保調整薪資申請書.pdf",
+    href: "./pdf/會員勞健保調整薪資申請書.pdf",
     size: "PDF",
     updated: "2025-09-13"
   }
@@ -210,7 +190,7 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
   render();
 })();
 
-/* ======== 一頁式導覽高亮 & 手機選單 & 回頂部 ======== */
+/* ======== 一頁式導覽高亮 & 手機選單 ======== */
 (function navEnhance(){
   const links = $$('.nav-links a[href^="#"]');
   const sections = links
@@ -242,8 +222,6 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
   nav?.addEventListener('click', (e) => {
     if(e.target.matches('a[href^="#"]')) closeMenu();
   });
-
-  // （已移除）把 #downloads 轉導到 #history 的舊需求
 })();
 
 /* ======== 年份（頁尾） ======== */
@@ -252,7 +230,6 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
   document.querySelectorAll('#year2').forEach(el => el && (el.textContent = y));
 })();
 
-/* === 重要公告 Modal（修正作用域：不外漏變數） === */
 /* === 重要公告 Modal（關閉後強制回到最上方 Hero） === */
 (function announcementModal(){
   // 公告的顯示期限（到 2025-11-20 23:59:59 +08）
@@ -268,22 +245,17 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
   const laterBtn   = document.getElementById('annLater');
   const dontShow   = document.getElementById('annDontShow');
 
-  // 關閉時，保證回到最上方（避免有時被瀏覽器排版/快取影響）
+  // 關閉時，保證回到最上方（避免被瀏覽器排版/快取影響）
   function jumpToTopHard() {
     const html = document.documentElement;
     const prev = html.style.scrollBehavior;
-    html.style.scrollBehavior = 'auto';     // 關掉平滑動畫，直接瞬間到頂
-
-    // 多次嘗試 + RAF，涵蓋 iOS Safari / Chrome 可能的排版延遲
+    html.style.scrollBehavior = 'auto';
     const doScroll = () => {
       window.scrollTo(0, 0);
-      document.body.scrollTop = 0;              // iOS Safari 備援
-      document.documentElement.scrollTop = 0;   // 另一種備援
-      const hero = document.getElementById('hero');
-      // 如有 Hero，就直接對它做 scrollIntoView（有些瀏覽器較穩）
-      hero?.scrollIntoView({ block: 'start', inline: 'nearest', behavior: 'auto' });
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+      document.getElementById('hero')?.scrollIntoView({ block: 'start', inline: 'nearest', behavior: 'auto' });
     };
-
     doScroll();
     requestAnimationFrame(() => {
       doScroll();
@@ -329,8 +301,7 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
   const now = Date.now();
   const hideUntil = parseInt(localStorage.getItem(KEY) || '0', 10);
   if (now <= DEADLINE_TS && !(hideUntil && now < hideUntil)) {
-    // 等 100~150ms，避開首次排版抖動
-    setTimeout(open, 120);
+    setTimeout(open, 120); // 避開首次排版抖動
   }
 
   // 事件
@@ -445,7 +416,7 @@ const ANNALS = [
     { date: "4月27日", text: "依法申請加入彰化縣總工會為會，經核准並核發彰總工證字第145號會員證書。" },
     { date: "4月27日", text: "依法向台閩地區勞工保險局申請投保會員勞工保，經核准並核發職字第721號勞工保險證，自74.04.27.起生效。" },
     { date: "4月27日", text: "依法申請加入台灣省營造業職業工會聯合會為會，經核准發給省聯會證字第17號會員證書。" },
-    { date: "4月29日", text: "向彰化郵局三支分局申請設立郵政劃撥帳，經核准設立，帳號中字02642662號。" }
+    { date: "4月29日", text: "向彰化郵局三支分局申請設立郵政劃撥帳，經核準設立，帳號中字02642662號。" }
   ]}
 ];
 
@@ -456,9 +427,6 @@ const ANNALS = [
 
   const YEARS = Array.isArray(ANNALS) ? [...ANNALS].sort((a,b)=> b.year - a.year) : [];
   if (!YEARS.length){ host.innerHTML = `<div class="card">尚無資料。</div>`; return; }
-
-  // 只有使用者互動或原本就帶 #y… 的深連結時，才更新網址
-  let allowHashUpdate = location.hash.startsWith('#y');
 
   const isMobile = () => window.matchMedia('(max-width: 900px)').matches;
   const getHashYear = () => {
@@ -571,21 +539,15 @@ const ANNALS = [
       c.classList.toggle('active', +c.dataset.year === y.year);
       if (c.classList.contains('active') && isMobile()) c.scrollIntoView({ inline:'center', block:'nearest' });
     });
-
-    // if (allowHashUpdate) {
-    //   history.replaceState(null, '', `#y${y.year}`);
-    // }
   }
 
   // 事件：點年份（索引／膠囊）
   railBody.addEventListener('click', (e)=>{
     const btn = e.target.closest('.y-item'); if(!btn) return;
-    allowHashUpdate = true;
     renderYear(+btn.dataset.year);
   });
   chipRow.addEventListener('click', (e)=>{
     const btn = e.target.closest('.chip'); if(!btn) return;
-    allowHashUpdate = true;
     renderYear(+btn.dataset.year);
   });
 
@@ -626,11 +588,13 @@ const ANNALS = [
     img?.addEventListener('error', () => requestAnimationFrame(reveal), { once:true });
   }
 
+  // bfcache 回來維持已顯示
   window.addEventListener('pageshow', (e) => {
     if (e.persisted) requestAnimationFrame(reveal);
   });
 })();
-/* 保險：確保不會殘留 .modal-open 造成不能捲動（LINE/Android 偶發） */
+
+/* 保險：避免殘留 .modal-open 造成不能捲動（LINE/Android 偶發） */
 (() => {
   const unlock = () => document.body.classList.remove('modal-open');
   window.addEventListener('pageshow', unlock);   // 含 bfcache 回來
