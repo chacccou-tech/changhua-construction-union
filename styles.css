@@ -909,3 +909,45 @@ html {
   .hero-inner{ padding-bottom: 30px; }        /* 手機再多留一些 */
   .hero-sub{ margin-bottom: 6px; }            /* 副標與底緣再拉開 */
 }
+
+
+/* === 入會完成 注意事項 === */
+.join-notes {
+  background: #f2f5f9;
+  border-top: 1px solid #e6ecf3;
+  border-bottom: 1px solid #e6ecf3;
+  padding: 48px 0 56px;
+}
+.join-notes .jn-wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+.join-notes .jn-title {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: .05em;
+  color: #0f5e8a;        /* 深藍，和全站風格一致 */
+  margin: 0 0 22px;
+}
+.join-notes .jn-ol {
+  list-style: decimal;
+  padding-left: 1.75rem;
+  line-height: 1.9;
+  font-size: 17px;
+  color: #1f2937;       /* 深灰，易讀 */
+}
+.join-notes .jn-ol > li { margin: 12px 0; }
+.join-notes .jn-ol ol {
+  list-style: decimal;
+  padding-left: 1.5rem;
+  margin-top: 6px;
+}
+.join-notes strong { font-weight: 700; }
+
+@media (max-width: 900px) {
+  .join-notes { padding: 32px 0 40px; }
+  .join-notes .jn-title { font-size: 22px; margin-bottom: 16px; }
+  .join-notes .jn-ol { font-size: 16px; line-height: 1.8; }
+}
