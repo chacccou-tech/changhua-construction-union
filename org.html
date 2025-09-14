@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>工會組織圖｜彰化縣營造業職業工會</title>
+  <meta name="description" content="彰化縣營造業職業工會 組織系統表（PDF 內嵌與下載）。" />
+
+  <!-- 與首頁一致的主樣式 -->
+  <link rel="stylesheet" href="styles.css" />
+  <!-- 本頁專用的小補充樣式 -->
+  <link rel="stylesheet" href="org.css" />
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%232871ff'/%3E%3Ctext x='50' y='58' text-anchor='middle' font-size='52' font-family='Arial' fill='white'%3E工%3C/text%3E%3C/svg%3E" />
+</head>
+
+<body>
+  <!-- 頁首（結構與首頁一致；連回首頁各錨點） -->
+  <header class="navbar" role="banner">
+    <div class="nav-inner">
+      <a class="brand" href="index.html" aria-label="回到首頁">
+        <span class="brand-badge" aria-hidden="true">
+          <img src="./img/營造工會LOGO.jpg" alt="" />
+        </span>
+        <span class="brand-name">彰化縣營造業職業工會</span>
+      </a>
+
+      <button class="menu-btn" id="menuToggle" aria-label="開啟主選單" aria-controls="primaryNav" aria-expanded="false">
+        <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+      </button>
+
+      <nav class="nav-links" id="primaryNav" aria-label="主要導覽">
+        <a href="index.html">最新消息</a>
+        <a href="index.html">關於本會</a>
+        <!-- <a href="index.html#about">聯絡我們</a> -->
+        <a class="active" href="org.html" aria-current="page">本會組織圖</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 小型頁首區（不放大圖，只顯示標題與動作） -->
+  <main>
+    <section class="hero-compact">
+      <h1>工會組織圖</h1>
+      <p class="muted">若手機無法內嵌顯示，請使用下方按鈕另開或下載 PDF。</p>
+      <div class="actions">
+        <a class="btn primary" href="./pdf/工會組織系統表.pdf" target="_blank" rel="noopener">下載／另開 PDF</a>
+        <a class="btn" href="index.html#top">回首頁</a>
+      </div>
+    </section>
+
+    <!-- PDF 內嵌（桌機最友善；行動若不支援會顯示備用內容） -->
+    <section class="sheet">
+      <div class="pdf-embed">
+        <object data="./pdf/工會組織系統表.pdf#view=FitH" type="application/pdf" aria-label="工會組織系統表 PDF 內嵌檢視">
+          <p>
+            您的裝置或瀏覽器無法內嵌顯示 PDF。請改用
+            <a class="btn primary" href="./pdf/工會組織系統表.pdf" target="_blank" rel="noopener">下載／另開 PDF</a>。
+          </p>
+        </object>
+      </div>
+    </section>
+  </main>
+
+  <!-- 頁尾（結構與首頁一致；連回首頁各錨點） -->
+  <footer class="union-footer" role="contentinfo">
+    <div class="uf-inner">
+      <div class="uf-left">
+        <img src="./img/會徽.jpg" alt="彰化縣營造業職業工會 會徽" class="uf-logo" />
+        <div class="uf-title">
+          <div class="cn">彰化縣營造業職業工會</div>
+          <div class="en">Changhua Construction Union of Occupational Labor</div>
+        </div>
+      </div>
+
+      <nav class="uf-nav" aria-label="頁尾導覽">
+        <a href="index.html#top">首頁</a><span aria-hidden="true">·</span>
+        <a href="index.html#news">最新消息</a><span aria-hidden="true">·</span>
+        <!-- 這裡我幫你改成實際到下載區的錨點（index.html#downloads）。若你想跟首頁完全一致，也可改回 index.html#top -->
+        <a href="index.html#downloads">下載專區</a><span aria-hidden="true">·</span>
+      </nav>
+
+      <address class="uf-contact">
+        <p>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 10c0 6-9 12-9 12S3 16 3 10a9 9 0 1 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+          彰化市曉陽路262-1號4樓
+        </p>
+        <p>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.18 2 2 0 0 1 4.11 2h3"/></svg>
+          <a href="tel:047233698">04-723-3698</a>
+        </p>
+        <p>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+          週一至週五 08:30–17:30
+        </p>
+      </address>
+    </div>
+
+    <div class="uf-copy">
+      © <span id="year2"></span> 彰化縣營造業職業工會
+    </div>
+  </footer>
+
+  <!-- 本頁專用腳本（不混用 app.js） -->
+  <script src="org.js" defer></script>
+</body>
+</html>
