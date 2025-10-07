@@ -1,14 +1,9 @@
 /* ==== 首次載入：預設置頂，但若使用者曾勾「不要再顯示」公告，則不強制置頂 ==== */
 (function forceTopOnFirstLoad(){
-  // 停用瀏覽器自動還原卷動位置
   if ('scrollRestoration' in history) {
     try { history.scrollRestoration = 'manual'; } catch {}
   }
-
-  // 若網址本身帶錨點（例如 #news / #history），則尊重錨點，不強制回頂
   const respectHash = !!location.hash && location.hash !== '#top';
-
-  // 若使用者曾在公告勾選「不要再顯示」，則下次進站不強制置頂
   let skipForceTop = false;
   try {
     const ANN_KEY = 'union-ann-hide-until-v1';
@@ -18,18 +13,15 @@
 
   function toTopHard(){
     if (respectHash || skipForceTop) return;
-
     const html = document.documentElement;
     const prev = html.style.scrollBehavior;
-    html.style.scrollBehavior = 'auto'; // 關閉平滑動畫
-
+    html.style.scrollBehavior = 'auto';
     const doScroll = () => {
       window.scrollTo(0, 0);
-      document.body.scrollTop = 0;            // iOS 備援
-      document.documentElement.scrollTop = 0; // 另一備援
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
       document.getElementById('hero')?.scrollIntoView({ block: 'start', behavior: 'auto' });
     };
-
     doScroll();
     requestAnimationFrame(() => {
       doScroll();
@@ -37,14 +29,10 @@
     });
   }
 
-  // 初次進站（非 bfcache）就置頂（若未被 skipForceTop/錨點排除）
   window.addEventListener('pageshow', (e) => { if (!e.persisted) toTopHard(); }, { once: true });
-  // 仍加一個載入保險
   window.addEventListener('load', toTopHard, { once: true });
-  // 有些瀏覽器在 DOM ready 就能成功
   document.addEventListener('DOMContentLoaded', () => requestAnimationFrame(toTopHard), { once: true });
 })();
-
 
 /* ======== 可編輯資料：最新消息 ======== */
 const NEWS = [
@@ -56,11 +44,10 @@ const NEWS = [
     body: "本會第13屆『會員代表』當選名冊已彙整完成，提供會員線上預覽與下載保存。",
     attachments: [
       {
-        href: "./pdf/roster-reps-13th.pdf#toolbar=0",   // 隱藏瀏覽器 PDF 工具列，避免顯示亂碼的 Title
+        href: "./pdf/roster-reps-13th.pdf",
         label: "第13屆會員代表當選名冊",
         size: "PDF",
-        canPreview: true,
-        download: "第13屆會員代表當選名冊.pdf"        // 下載時仍用中文檔名
+        canPreview: true
       }
     ]
   },
@@ -72,11 +59,10 @@ const NEWS = [
     body: "本會第13屆『小組長』當選名冊已公告，提供線上預覽與下載。",
     attachments: [
       {
-        href: "./pdf/roster-leaders-13th.pdf#toolbar=0",
+        href: "./pdf/roster-leaders-13th.pdf",
         label: "第13屆小組長當選名冊",
         size: "PDF",
-        canPreview: true,
-        download: "第13屆小組長當選名冊.pdf"
+        canPreview: true
       }
     ]
   },
@@ -100,10 +86,8 @@ const NEWS = [
   }
 ];
 
-
 /* ======== 可編輯資料：下載清單（PDF，路徑改到 ./pdf/） ======== */
 const DOWNLOADS = [
-  
   {
     title: "辦理入會加保需知（第5版，114.09.12）",
     href: "./pdf/《入會》辦理入會加保需知(第5版，114.09.12.).pdf",
@@ -123,6 +107,13 @@ const $ = (sel, el = document) => el.querySelector(sel);
 const $$ = (sel, el = document) => Array.from(el.querySelectorAll(sel));
 const fmtDate = (d) => new Intl.DateTimeFormat('zh-TW', { year:'numeric', month:'2-digit', day:'2-digit' }).format(new Date(d));
 const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
+
+// 僅預覽 PDF：隱藏工具列/縮圖/狀態列
+function toPreviewOnly(url){
+  const [base] = String(url).split('#');
+  const q = 'toolbar=0&navpanes=0&statusbar=0&view=FitH';
+  return `${base}#${q}`;
+}
 
 /* ======== 最新消息（列表）渲染：單一膠囊 + 搜尋 ======== */
 (function renderNews(){
@@ -167,14 +158,26 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
         <div class="n-body">${it.body}</div>
         ${Array.isArray(it.attachments) && it.attachments.length ? `
           <div class="attachments">
-            ${it.attachments.map(a => `
-              <a class="a-btn" href="${a.href}" target="_blank" rel="noopener" download>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-                </svg>
-                ${a.label}${a.size ? `（${a.size}）` : ''}
-              </a>
-            `).join('')}
+            ${it.attachments.map(a => {
+              const isPreviewOnly = a.canPreview === true;
+              const href = isPreviewOnly ? toPreviewOnly(a.href) : a.href;
+              return `
+                <a class="a-btn"
+                   href="${href}"
+                   target="_blank"
+                   rel="noopener"
+                   ${isPreviewOnly ? '' : (a.download ? `download="${a.download}"` : 'download')}
+                   aria-label="${isPreviewOnly ? '預覽 ' : '下載 '}${a.label}">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    ${isPreviewOnly
+                      ? `<circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle>`
+                      : `<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>`
+                    }
+                  </svg>
+                  ${a.label}${a.size ? `（${a.size}）` : ''}
+                </a>
+              `;
+            }).join('')}
           </div>` : ''}
       `;
       list.appendChild(card);
@@ -233,7 +236,6 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
     .map(a => document.querySelector(a.getAttribute('href')))
     .filter(Boolean);
 
-  // 高亮導覽
   const io = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       const id = '#' + entry.target.id;
@@ -247,7 +249,6 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
   }, { rootMargin: "-40% 0px -55% 0px", threshold: 0.01 });
   sections.forEach(s => io.observe(s));
 
-  // 手機漢堡選單
   const toggle = $('#menuToggle');
   const nav = $('#primaryNav');
   const closeMenu = () => { nav.classList.remove('open'); toggle.setAttribute('aria-expanded','false'); };
@@ -268,7 +269,6 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
 
 /* === 重要公告 Modal（關閉後強制回到最上方 Hero） === */
 (function announcementModal(){
-  // 公告的顯示期限（到 2025-11-20 23:59:59 +08）
   const DEADLINE_TS = new Date('2025-11-20T23:59:59+08:00').getTime();
   const KEY = 'union-ann-hide-until-v1';
 
@@ -281,7 +281,6 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
   const laterBtn   = document.getElementById('annLater');
   const dontShow   = document.getElementById('annDontShow');
 
-  // 關閉時，保證回到最上方（避免被瀏覽器排版/快取影響）
   function jumpToTopHard() {
     const html = document.documentElement;
     const prev = html.style.scrollBehavior;
@@ -300,7 +299,7 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
   }
 
   const open = () => {
-    document.body.classList.add('modal-open');  // CSS：body.modal-open { overflow:hidden; }
+    document.body.classList.add('modal-open');
     backdrop.hidden = false;
     modal.hidden = false;
     (closeBtn || confirmBtn || modal).focus?.({ preventScroll: true });
@@ -312,11 +311,9 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
     backdrop.hidden = true;
     modal.hidden = true;
     document.body.classList.remove('modal-open');
-    // 關閉後立刻強制回頂，讓第一眼看到 Hero
     jumpToTopHard();
   };
 
-  // 對話框內的焦點圈定（鍵盤操作可用）
   let focusHandler;
   function trapFocus(enable){
     if(!enable){ document.removeEventListener('keydown', focusHandler); return; }
@@ -333,14 +330,12 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
     document.addEventListener('keydown', focusHandler);
   }
 
-  // 初始是否顯示（沒到截止、且未選「不要再顯示」）
   const now = Date.now();
   const hideUntil = parseInt(localStorage.getItem(KEY) || '0', 10);
   if (now <= DEADLINE_TS && !(hideUntil && now < hideUntil)) {
-    setTimeout(open, 120); // 避開首次排版抖動
+    setTimeout(open, 120);
   }
 
-  // 事件
   backdrop.addEventListener('click', close);
   closeBtn?.addEventListener('click', close);
   laterBtn?.addEventListener('click', close);
@@ -349,7 +344,6 @@ const daysBetween = (a, b) => Math.round((+b - +a) / 86400000);
     close();
   });
 })();
-
 
 /* === 歷年重要記事資料（依你提供內容整理） === */
 const ANNALS = [
@@ -470,7 +464,6 @@ const ANNALS = [
   };
   let currentYear = getHashYear() || YEARS[0].year;
 
-  // 骨架
   host.innerHTML = `
     <div class="annals-3col">
       <aside class="year-rail" id="yearRail" aria-label="年份索引">
@@ -504,7 +497,6 @@ const ANNALS = [
   const actions    = document.getElementById('annActions');
   const yearRail   = document.getElementById('yearRail');
 
-  // 與左側圖片等高
   const fig = document.querySelector('#history .history-figure');
   const updateRailHeight = () => {
     if (isMobile()) { yearRail.style.height = ''; return; }
@@ -517,7 +509,6 @@ const ANNALS = [
     updateRailHeight();
   }
 
-  // 年份索引
   let lastDecade = null;
   railBody.innerHTML = YEARS.map(y=>{
     const decade = Math.floor(y.year / 10) * 10;
@@ -532,12 +523,10 @@ const ANNALS = [
     `;
   }).join('');
 
-  // 行動版膠囊
   chipRow.innerHTML = YEARS.map(y=>`
     <button class="chip ${y.year===currentYear?'active':''}" data-year="${y.year}">民國${y.year}</button>
   `).join('');
 
-  // 渲染某一年
   function renderYear(yr){
     const y = YEARS.find(v=>v.year===yr) || YEARS[0];
     currentYear = y.year;
@@ -564,7 +553,6 @@ const ANNALS = [
     };
     draw();
 
-    // 索引高亮
     railBody.querySelectorAll('.y-item').forEach(b=>{
       const on = +b.dataset.year === y.year;
       b.classList.toggle('active', on);
@@ -577,7 +565,6 @@ const ANNALS = [
     });
   }
 
-  // 事件：點年份（索引／膠囊）
   railBody.addEventListener('click', (e)=>{
     const btn = e.target.closest('.y-item'); if(!btn) return;
     renderYear(+btn.dataset.year);
@@ -587,21 +574,12 @@ const ANNALS = [
     renderYear(+btn.dataset.year);
   });
 
-  // 索引快速跳到最上/最下
   railTop.addEventListener('click', ()=> railBody.scrollTo({ top: 0, behavior: 'smooth' }));
   railBottom.addEventListener('click', ()=> railBody.scrollTo({ top: railBody.scrollHeight, behavior: 'smooth' }));
 
-  // hash 直接導向
-  window.addEventListener('hashchange', ()=>{
-    const hy = getHashYear();
-    if (hy && hy !== currentYear) renderYear(hy);
-  });
-
-  // 斷點切換時調整高度
   const mql = window.matchMedia('(max-width: 900px)');
   mql.addEventListener('change', updateRailHeight);
 
-  // 初次顯示
   renderYear(currentYear);
 })();
 
@@ -624,7 +602,6 @@ const ANNALS = [
     img?.addEventListener('error', () => requestAnimationFrame(reveal), { once:true });
   }
 
-  // bfcache 回來維持已顯示
   window.addEventListener('pageshow', (e) => {
     if (e.persisted) requestAnimationFrame(reveal);
   });
@@ -633,7 +610,7 @@ const ANNALS = [
 /* 保險：避免殘留 .modal-open 造成不能捲動（LINE/Android 偶發） */
 (() => {
   const unlock = () => document.body.classList.remove('modal-open');
-  window.addEventListener('pageshow', unlock);   // 含 bfcache 回來
+  window.addEventListener('pageshow', unlock);
   window.addEventListener('focus', unlock);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) unlock(); });
 })();
