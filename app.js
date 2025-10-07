@@ -39,7 +39,7 @@ const NEWS = [
   {
     id: "n-2025-09-roster-reps",
     title: "第13屆會員代表當選名冊",
-    date: "2025-09-14",
+    date: "2025-10-07",
     tags: ["公告", "選舉"],
     body: "本會第13屆『會員代表』當選名冊已彙整完成，提供會員線上預覽與下載保存。",
     attachments: [
@@ -54,7 +54,7 @@ const NEWS = [
   {
     id: "n-2025-09-roster-leaders",
     title: "第13屆小組長當選名冊",
-    date: "2025-09-14",
+    date: "2025-10-07",
     tags: ["公告", "選舉"],
     body: "本會第13屆『小組長』當選名冊已公告，提供線上預覽與下載。",
     attachments: [
