@@ -268,82 +268,82 @@ function toPreviewOnly(url){
 })();
 
 /* === 重要公告 Modal（關閉後強制回到最上方 Hero） === */
-(function announcementModal(){
-  const DEADLINE_TS = new Date('2025-11-20T23:59:59+08:00').getTime();
-  const KEY = 'union-ann-hide-until-v1';
+// (function announcementModal(){
+//   const DEADLINE_TS = new Date('2025-11-20T23:59:59+08:00').getTime();
+//   const KEY = 'union-ann-hide-until-v1';
 
-  const backdrop = document.getElementById('annBackdrop');
-  const modal = document.getElementById('annModal');
-  if(!backdrop || !modal) return;
+//   const backdrop = document.getElementById('annBackdrop');
+//   const modal = document.getElementById('annModal');
+//   if(!backdrop || !modal) return;
 
-  const closeBtn   = document.getElementById('annClose');
-  const confirmBtn = document.getElementById('annConfirm');
-  const laterBtn   = document.getElementById('annLater');
-  const dontShow   = document.getElementById('annDontShow');
+//   const closeBtn   = document.getElementById('annClose');
+//   const confirmBtn = document.getElementById('annConfirm');
+//   const laterBtn   = document.getElementById('annLater');
+//   const dontShow   = document.getElementById('annDontShow');
 
-  function jumpToTopHard() {
-    const html = document.documentElement;
-    const prev = html.style.scrollBehavior;
-    html.style.scrollBehavior = 'auto';
-    const doScroll = () => {
-      window.scrollTo(0, 0);
-      document.body.scrollTop = 0;
-      document.documentElement.scrollTop = 0;
-      document.getElementById('hero')?.scrollIntoView({ block: 'start', inline: 'nearest', behavior: 'auto' });
-    };
-    doScroll();
-    requestAnimationFrame(() => {
-      doScroll();
-      setTimeout(() => { doScroll(); html.style.scrollBehavior = prev; }, 150);
-    });
-  }
+//   function jumpToTopHard() {
+//     const html = document.documentElement;
+//     const prev = html.style.scrollBehavior;
+//     html.style.scrollBehavior = 'auto';
+//     const doScroll = () => {
+//       window.scrollTo(0, 0);
+//       document.body.scrollTop = 0;
+//       document.documentElement.scrollTop = 0;
+//       document.getElementById('hero')?.scrollIntoView({ block: 'start', inline: 'nearest', behavior: 'auto' });
+//     };
+//     doScroll();
+//     requestAnimationFrame(() => {
+//       doScroll();
+//       setTimeout(() => { doScroll(); html.style.scrollBehavior = prev; }, 150);
+//     });
+//   }
 
-  const open = () => {
-    document.body.classList.add('modal-open');
-    backdrop.hidden = false;
-    modal.hidden = false;
-    (closeBtn || confirmBtn || modal).focus?.({ preventScroll: true });
-    trapFocus(true);
-  };
+//   const open = () => {
+//     document.body.classList.add('modal-open');
+//     backdrop.hidden = false;
+//     modal.hidden = false;
+//     (closeBtn || confirmBtn || modal).focus?.({ preventScroll: true });
+//     trapFocus(true);
+//   };
 
-  const close = () => {
-    trapFocus(false);
-    backdrop.hidden = true;
-    modal.hidden = true;
-    document.body.classList.remove('modal-open');
-    jumpToTopHard();
-  };
+//   const close = () => {
+//     trapFocus(false);
+//     backdrop.hidden = true;
+//     modal.hidden = true;
+//     document.body.classList.remove('modal-open');
+//     jumpToTopHard();
+//   };
 
-  let focusHandler;
-  function trapFocus(enable){
-    if(!enable){ document.removeEventListener('keydown', focusHandler); return; }
-    const selectors = 'a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])';
-    focusHandler = (e) => {
-      if(e.key === 'Escape'){ e.preventDefault(); close(); return; }
-      if(e.key !== 'Tab') return;
-      const f = Array.from(modal.querySelectorAll(selectors)).filter(el => !el.disabled);
-      if(!f.length) return;
-      const first = f[0], last = f[f.length - 1];
-      if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
-      else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
-    };
-    document.addEventListener('keydown', focusHandler);
-  }
+//   let focusHandler;
+//   function trapFocus(enable){
+//     if(!enable){ document.removeEventListener('keydown', focusHandler); return; }
+//     const selectors = 'a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])';
+//     focusHandler = (e) => {
+//       if(e.key === 'Escape'){ e.preventDefault(); close(); return; }
+//       if(e.key !== 'Tab') return;
+//       const f = Array.from(modal.querySelectorAll(selectors)).filter(el => !el.disabled);
+//       if(!f.length) return;
+//       const first = f[0], last = f[f.length - 1];
+//       if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+//       else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+//     };
+//     document.addEventListener('keydown', focusHandler);
+//   }
 
-  const now = Date.now();
-  const hideUntil = parseInt(localStorage.getItem(KEY) || '0', 10);
-  if (now <= DEADLINE_TS && !(hideUntil && now < hideUntil)) {
-    setTimeout(open, 120);
-  }
+//   const now = Date.now();
+//   const hideUntil = parseInt(localStorage.getItem(KEY) || '0', 10);
+//   if (now <= DEADLINE_TS && !(hideUntil && now < hideUntil)) {
+//     setTimeout(open, 120);
+//   }
 
-  backdrop.addEventListener('click', close);
-  closeBtn?.addEventListener('click', close);
-  laterBtn?.addEventListener('click', close);
-  confirmBtn?.addEventListener('click', () => {
-    if(dontShow?.checked){ localStorage.setItem(KEY, String(DEADLINE_TS)); }
-    close();
-  });
-})();
+//   backdrop.addEventListener('click', close);
+//   closeBtn?.addEventListener('click', close);
+//   laterBtn?.addEventListener('click', close);
+//   confirmBtn?.addEventListener('click', () => {
+//     if(dontShow?.checked){ localStorage.setItem(KEY, String(DEADLINE_TS)); }
+//     close();
+//   });
+// })();
 
 /* === 歷年重要記事資料（依你提供內容整理） === */
 const ANNALS = [
