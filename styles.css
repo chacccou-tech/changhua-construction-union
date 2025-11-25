@@ -987,3 +987,28 @@ html {
     box-shadow:none; border:1px dashed var(--border);
   }
 }
+/* 讓標題可換行、容器允許換行 */
+.n-head{
+  display:flex;
+  align-items:baseline;
+  gap:10px;
+  flex-wrap: wrap;           /* 允許換行 */
+}
+
+/* 標題佔滿剩餘寬度並可換行 */
+.n-title{
+  flex: 1 1 300px;           /* 可伸縮，預設最小寬 300px */
+  min-width: 0;              /* 避免被內容撐爆 */
+  white-space: normal;       /* 允許換行 */
+  overflow: visible;         /* 不截斷 */
+  text-overflow: clip;       /* 取消省略號 */
+  line-height: 1.4;
+  word-break: break-word;    /* 長字/英文可斷行 */
+  overflow-wrap: anywhere;   /* 再保險一層，任何地方都可斷行 */
+}
+
+/* 日期固定不換行；空間不足時自動掉到下一行靠右 */
+.n-date{
+  white-space: nowrap;
+  margin-left: auto;         /* 在第一行時貼右側 */
+}
